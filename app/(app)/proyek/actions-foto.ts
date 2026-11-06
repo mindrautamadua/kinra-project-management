@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { BUCKET_LAMPIRAN } from '@/lib/foto';
+import { hariIni } from '@/lib/format';
 import { supabase } from '@/lib/supabase/server';
 
 export type HasilUnggah = { ok: boolean; pesan: string };
@@ -14,12 +15,16 @@ const JENIS = new Set(['image/jpeg', 'image/png', 'image/webp']);
 export async function unggahFoto(form: FormData): Promise<HasilUnggah> {
   const projectId = String(form.get('project_id') ?? '');
   const activityId = String(form.get('activity_id') ?? '');
-  const tanggal = String(form.get('tanggal') ?? '').trim() || null;
-  // Satu keterangan per foto, urutannya sama dengan urutan foto.
+  // Satu keterangan dan satu tanggal pelaksanaan per foto, urutannya sama dengan urutan foto.
+  const tanggal = form.getAll('tanggal').map(t => String(t).trim());
   const keterangan = form.getAll('keterangan').map(k => String(k).trim() || null);
   const foto = form.getAll('foto').filter((f): f is File => f instanceof File && f.size > 0);
   if (!activityId) return { ok: false, pesan: 'Pilih aktivitas terlebih dahulu.' };
   if (foto.length === 0) return { ok: false, pesan: 'Pilih minimal satu foto.' };
+  // Tanggal pelaksanaan wajib per foto: unggah dilakukan tiap Jumat, sedangkan foto bisa diambil di hari lain.
+  const kosong = foto.findIndex((_, i) => !/^\d{4}-\d{2}-\d{2}$/.test(tanggal[i] ?? ''));
+  if (kosong >= 0) return { ok: false, pesan: `Isi tanggal pelaksanaan foto ${kosong + 1}.` };
+  if (tanggal.some(t => t > hariIni())) return { ok: false, pesan: 'Tanggal pelaksanaan tidak boleh melewati hari ini.' };
   if (foto.length > MAKS_FOTO) return { ok: false, pesan: `Maksimal ${MAKS_FOTO} foto sekali unggah.` };
   if (foto.some(f => !JENIS.has(f.type))) return { ok: false, pesan: 'Hanya foto JPG, PNG, atau WebP yang dapat diunggah.' };
 
@@ -41,7 +46,7 @@ export async function unggahFoto(form: FormData): Promise<HasilUnggah> {
   const { data: { user } } = await sb.auth.getUser();
   const { error } = await sb.from('attachments').insert(terunggah.map((path, i) => ({
     entitas: 'activity', entitas_id: activityId, storage_path: path, nama_file: foto[i].name,
-    ukuran_byte: foto[i].size, keterangan: keterangan[i] ?? null, tanggal_kegiatan: tanggal, diunggah_oleh: user?.id,
+    ukuran_byte: foto[i].size, keterangan: keterangan[i] ?? null, tanggal_kegiatan: tanggal[i], diunggah_oleh: user?.id,
   })));
   if (error) {
     await sb.storage.from(BUCKET_LAMPIRAN).remove(terunggah);
@@ -77,7 +82,11 @@ export async function hapusFoto(form: FormData) {
 export async function ubahKeteranganFoto(id: string, keterangan: string, projectId: string, tanggal?: string): Promise<HasilUnggah> {
   const sb = await supabase();
   const isi: Record<string, string | null> = { keterangan: keterangan.trim() || null };
-  if (tanggal !== undefined) isi.tanggal_kegiatan = tanggal.trim() || null;
+  if (tanggal !== undefined) {
+    const t = tanggal.trim();
+    if (t && t > hariIni()) return { ok: false, pesan: 'Tanggal pelaksanaan tidak boleh melewati hari ini.' };
+    isi.tanggal_kegiatan = t || null;
+  }
   const { data, error } = await sb.from('attachments').update(isi).eq('id', id).select('id');
   if (error) return { ok: false, pesan: error.message };
   if (!data?.length) return { ok: false, pesan: 'Hanya pengunggah foto atau Admin yang dapat mengubah keterangan.' };

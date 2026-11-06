@@ -19,37 +19,79 @@ async function perkecil(f: File): Promise<File> {
   return blob ? new File([blob], f.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : f;
 }
 
+// Tanggal pengambilan dari EXIF (DateTimeOriginal, cadangan DateTime) pada JPEG asli, sebelum diperkecil
+// (kanvas membuang EXIF). Mengembalikan 'YYYY-MM-DD' atau '' bila tidak ada; PNG/WebP umumnya tanpa EXIF.
+async function tanggalExif(f: File): Promise<string> {
+  try {
+    const v = new DataView(await f.slice(0, 256 * 1024).arrayBuffer());
+    if (v.byteLength < 4 || v.getUint16(0) !== 0xffd8) return '';
+    let o = 2;
+    while (o + 4 <= v.byteLength) {
+      const marker = v.getUint16(o), len = v.getUint16(o + 2);
+      if (marker === 0xffe1 && v.getUint32(o + 4) === 0x45786966) return bacaTiff(v, o + 10);
+      if ((marker & 0xff00) !== 0xff00 || marker === 0xffda) return '';
+      o += 2 + len;
+    }
+  } catch { /* berkas rusak atau tidak terbaca: isi manual */ }
+  return '';
+}
+
+function bacaTiff(v: DataView, t: number): string {
+  const le = v.getUint16(t) === 0x4949;
+  const u16 = (o: number) => v.getUint16(t + o, le), u32 = (o: number) => v.getUint32(t + o, le);
+  const cari = (ifd: number, tag: number) => {
+    const n = u16(ifd);
+    for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12; if (u16(e) === tag) return u32(e + 8); }
+    return null;
+  };
+  const teks = (o: number | null) => {
+    if (o === null) return '';
+    const s = Array.from({ length: 10 }, (_, i) => String.fromCharCode(v.getUint8(t + o + i))).join('');
+    return /^\d{4}:\d{2}:\d{2}$/.test(s) && !s.startsWith('0000') ? s.replaceAll(':', '-') : '';
+  };
+  const ifd0 = u32(4);
+  const exif = cari(ifd0, 0x8769);
+  return (exif !== null && teks(cari(exif, 0x9003))) || teks(cari(ifd0, 0x0132));
+}
+
 type Foto = { id: string; url: string | null; keterangan: string | null; bisaUbah: boolean; tanggal: string };
 
-// Unggah foto kegiatan dari baris aktivitas di form update mingguan, dengan keterangan per foto.
+// Unggah foto kegiatan dari baris aktivitas di form update mingguan, dengan keterangan dan tanggal pelaksanaan per foto.
+// Foto biasanya diunggah sekaligus tiap Jumat padahal diambil di hari berbeda, jadi tanggal diisi per foto
+// (otomatis dari EXIF kamera bila ada, selebihnya diisi pengguna).
 // Berada di dalam form update, jadi isiannya tanpa atribut name (tidak ikut terkirim) dan dikirim lewat tombolnya sendiri.
-export default function FotoAktivitas({ projectId, activityId, nama, hariIni, tanggalAwal, foto }: {
-  projectId: string; activityId: string; nama: string; hariIni: string; tanggalAwal: string; foto: Foto[];
+export default function FotoAktivitas({ projectId, activityId, nama, hariIni, foto }: {
+  projectId: string; activityId: string; nama: string; hariIni: string; foto: Foto[];
 }) {
   const berkas = useRef<HTMLInputElement>(null);
-  const tanggal = useRef<HTMLInputElement>(null);
-  const [pilihan, setPilihan] = useState<{ file: File; pratinjau: string; ket: string }[]>([]);
+  const [pilihan, setPilihan] = useState<{ file: File; pratinjau: string; ket: string; tgl: string; exif: boolean }[]>([]);
   const [hasil, setHasil] = useState<HasilUnggah | null>(null);
   const [proses, mulai] = useTransition();
 
   useEffect(() => () => pilihan.forEach(p => URL.revokeObjectURL(p.pratinjau)), [pilihan]);
 
-  function pilih(e: React.ChangeEvent<HTMLInputElement>) {
+  async function pilih(e: React.ChangeEvent<HTMLInputElement>) {
     setHasil(null);
-    setPilihan([...(e.target.files ?? [])].map(file => ({ file, pratinjau: URL.createObjectURL(file), ket: '' })));
+    const daftar = [...(e.target.files ?? [])];
+    setPilihan(await Promise.all(daftar.map(async file => {
+      const t = await tanggalExif(file);
+      const sah = !!t && t <= hariIni;
+      return { file, pratinjau: URL.createObjectURL(file), ket: '', tgl: sah ? t : '', exif: sah };
+    })));
   }
+  const ubah = (i: number, isi: Partial<{ ket: string; tgl: string; exif: boolean }>) => setPilihan(l => l.map((x, j) => (j === i ? { ...x, ...isi } : x)));
 
   function unggah() {
     if (pilihan.length === 0) { setHasil({ ok: false, pesan: 'Pilih minimal satu foto.' }); return; }
-    if (!tanggal.current?.value) { setHasil({ ok: false, pesan: 'Isi tanggal pelaksanaan kegiatan pada foto.' }); tanggal.current?.focus(); return; }
+    const kosong = pilihan.findIndex(p => !p.tgl);
+    if (kosong >= 0) { setHasil({ ok: false, pesan: `Isi tanggal pelaksanaan foto ${kosong + 1}.` }); document.getElementById(`tgl-${activityId}-${kosong}`)?.focus(); return; }
     mulai(async () => {
       setHasil(null);
       try {
         const data = new FormData();
         data.set('project_id', projectId);
         data.set('activity_id', activityId);
-        data.set('tanggal', tanggal.current?.value ?? '');
-        for (const p of pilihan) { data.append('foto', await perkecil(p.file)); data.append('keterangan', p.ket); }
+        for (const p of pilihan) { data.append('foto', await perkecil(p.file)); data.append('keterangan', p.ket); data.append('tanggal', p.tgl); }
         const h = await unggahFoto(data);
         setHasil(h);
         if (h.ok) { setPilihan([]); if (berkas.current) berkas.current.value = ''; }
@@ -74,18 +116,22 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, ta
         <summary className="btn-mini"><Camera size={13} aria-hidden="true" /> {foto.length ? `${foto.length} foto · tambah/ubah` : 'Tambah foto'}</summary>
         <div className="form-pica mini-form">
           {foto.length > 0 && <div className="small muted">Keterangan foto yang sudah diunggah</div>}
-          {foto.map(f => <KeteranganFoto key={f.id} f={f} projectId={projectId} />)}
+          {foto.map(f => <KeteranganFoto key={f.id} f={f} projectId={projectId} hariIni={hariIni} />)}
           <div className="small muted">Unggah foto baru</div>
-          <label className="small">Tanggal pelaksanaan kegiatan (bukan tanggal unggah)
-            <input ref={tanggal} type="date" defaultValue={tanggalAwal} max={hariIni} aria-label={`Tanggal pelaksanaan kegiatan ${nama}`} />
-          </label>
+          <span className="small muted">Tanggal pelaksanaan diisi per foto, bukan tanggal unggah. Tanggal dari kamera terisi otomatis bila tersedia.</span>
           <input ref={berkas} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={pilih} aria-label={`Foto ${nama}`} />
           {pilihan.map((p, i) => (
             <div key={p.pratinjau} className="foto-ket">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.pratinjau} alt="" />
-              <textarea rows={2} value={p.ket} placeholder="Keterangan foto ini" aria-label={`Keterangan foto ${i + 1}`}
-                onChange={e => setPilihan(l => l.map((x, j) => (j === i ? { ...x, ket: e.target.value } : x)))} />
+              <div>
+                <textarea rows={2} value={p.ket} placeholder="Keterangan foto ini" aria-label={`Keterangan foto ${i + 1}`}
+                  onChange={e => ubah(i, { ket: e.target.value })} />
+                <label className="small">Tanggal pelaksanaan{p.exif ? <span className="muted"> · dari kamera</span> : <span className="flag"> · wajib diisi</span>}
+                  <input id={`tgl-${activityId}-${i}`} type="date" required value={p.tgl} max={hariIni} aria-label={`Tanggal pelaksanaan foto ${i + 1}`}
+                    onChange={e => ubah(i, { tgl: e.target.value, exif: false })} />
+                </label>
+              </div>
             </div>
           ))}
           <button type="button" className="btn" onClick={unggah} disabled={proses || pilihan.length === 0}>
@@ -98,7 +144,7 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, ta
   );
 }
 
-function KeteranganFoto({ f, projectId }: { f: Foto; projectId: string }) {
+function KeteranganFoto({ f, projectId, hariIni }: { f: Foto; projectId: string; hariIni: string }) {
   const [ket, setKet] = useState(f.keterangan ?? '');
   const [tanggal, setTanggal] = useState(f.tanggal);
   const [hasil, setHasil] = useState<HasilUnggah | null>(null);
@@ -111,7 +157,7 @@ function KeteranganFoto({ f, projectId }: { f: Foto; projectId: string }) {
       <div>
         <textarea rows={2} value={ket} disabled={!f.bisaUbah} placeholder="Keterangan foto ini" aria-label="Keterangan foto"
           onChange={e => { setKet(e.target.value); setHasil(null); }} />
-        <input type="date" value={tanggal} disabled={!f.bisaUbah} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan"
+        <input type="date" value={tanggal} max={hariIni} disabled={!f.bisaUbah} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan"
           onChange={e => { setTanggal(e.target.value); setHasil(null); }} />
         {f.bisaUbah && (
           <div className="foto-ket-aksi">

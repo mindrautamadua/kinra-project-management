@@ -76,7 +76,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
         <WajibTanggalSelesai />
         <fieldset disabled={!dapatEdit} className="polos">
           <SectionHead no="1" eyebrow="Progres aktivitas" judul="Perbarui progres setiap aktivitas">
-            <p className="muted">Progres hanya 0, 25, 50, 75, atau Selesai. Pilih Selesai dan isi tanggal aktual selesai bila aktivitas tuntas. Foto kegiatan langsung tersimpan saat diunggah dan tercetak di Lampiran laporan.</p>
+            <p className="muted">Progres hanya 0, 25, 50, 75, atau Selesai. Pilih Selesai dan isi tanggal aktual selesai bila aktivitas tuntas. Foto kegiatan langsung tersimpan saat diunggah dan tercetak di bawah charter proyek pada laporan. Isi tanggal pelaksanaan per foto (hari foto diambil, bukan hari unggah).</p>
           </SectionHead>
           <div className="card">
             <div className="table-wrap">
@@ -97,9 +97,9 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
                           </select>
                         </td>
                         <td><input type="date" name={`selesai_${a.id}`} defaultValue={a.aktual_selesai ?? ''} aria-label={`Tanggal aktual selesai ${a.nama}`} /></td>
-                        <td><FotoAktivitas projectId={p.id} activityId={a.id} nama={a.nama} hariIni={hariIni()} tanggalAwal={a.aktual_selesai ?? ''}
+                        <td><FotoAktivitas projectId={p.id} activityId={a.id} nama={a.nama} hariIni={hariIni()}
                           foto={foto.filter(f => f.activity_id === a.id).map(f => ({ id: f.id, url: f.url, keterangan: f.keterangan, bisaUbah: admin || f.diunggah_oleh === saya.id,
-                            tanggal: f.tanggal_kegiatan && f.tanggal_kegiatan !== f.created_at.slice(0, 10) ? f.tanggal_kegiatan : '' }))} /></td>
+                            tanggal: f.tanggal_kegiatan ?? '' }))} /></td>
                       </tr>
                     );
                   })}

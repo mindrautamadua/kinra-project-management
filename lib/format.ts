@@ -26,14 +26,14 @@ export function tgl(iso: string | null | undefined, tahun = true) {
   return `${d} ${BULAN[m - 1]}${tahun ? ` ${y}` : ''}`;
 }
 
-// Tanggal pelaksanaan untuk keterangan foto kegiatan. Tanggal kegiatan yang diisi pengunggah dipakai bila berbeda
-// dari tanggal unggah; bila sama (dulu terisi otomatis hari ini) atau kosong, dipakai periode pelaksanaan aktivitas
-// (aktual, atau rencana bila belum ada). Mengembalikan null bila tidak ada tanggal yang dapat ditampilkan.
+// Tanggal pelaksanaan untuk keterangan foto kegiatan: tanggal yang diisi pengunggah (wajib sejak unggah foto
+// meminta tanggal). Foto lama tanpa tanggal memakai periode pelaksanaan aktivitas (aktual, atau rencana bila belum ada).
+// Mengembalikan null bila tidak ada tanggal yang dapat ditampilkan.
 export function tanggalPelaksanaanFoto(
-  f: { tanggal_kegiatan: string | null; created_at: string },
+  f: { tanggal_kegiatan: string | null },
   a?: { aktual_mulai: string | null; aktual_selesai: string | null; rencana_mulai: string | null; rencana_selesai: string | null },
 ): string | null {
-  if (f.tanggal_kegiatan && f.tanggal_kegiatan !== f.created_at.slice(0, 10)) return tgl(f.tanggal_kegiatan);
+  if (f.tanggal_kegiatan) return tgl(f.tanggal_kegiatan);
   if (!a) return null;
   const mulai = a.aktual_mulai ?? a.rencana_mulai, selesai = a.aktual_selesai ?? a.rencana_selesai;
   if (!mulai && !selesai) return null;

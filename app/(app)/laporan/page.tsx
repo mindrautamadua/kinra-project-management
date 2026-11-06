@@ -118,7 +118,7 @@ export default async function Laporan({ searchParams }: { searchParams: Cari }) 
         )}
       </div>
       {detail.length > 0 && <Cover unitLabel={sampul} proyek={tercetak} adaRingkasan={!!ringkasan} halaman={halaman} lampiran={adaLampiran ? [{ hal: halPembuka, judul: 'Lampiran' }, ...daftarLampiran] : []} hariIni={hariIni()} />}
-      {ringkasan && <Ringkasan r={ringkasan} />}
+      {ringkasan && <Ringkasan r={ringkasan} halaman={3} />}
       {detail.length === 0 && <div className="card kosong layar-saja">{pilih && calon.length ? 'Belum ada proyek yang dipilih. Centang minimal satu proyek.' : `Tidak ada proyek yang cocok${cari ? ` dengan "${cari}"` : ''}.`}</div>}
       {detail.map(d => (
         <Fragment key={d.proyek.id}>

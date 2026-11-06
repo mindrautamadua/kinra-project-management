@@ -166,7 +166,7 @@ export default async function DetailProyek({ params }: { params: Promise<{ id: s
                           <form action={simpanKeteranganFoto} className="ket-form">
                             <input type="hidden" name="id" value={f.id} /><input type="hidden" name="project_id" value={p.id} />
                             <textarea name="keterangan" rows={2} defaultValue={f.keterangan ?? ''} placeholder="Keterangan foto ini" aria-label="Keterangan foto" />
-                            <input type="date" name="tanggal" defaultValue={f.tanggal_kegiatan && f.tanggal_kegiatan !== f.created_at.slice(0, 10) ? f.tanggal_kegiatan : ''} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan" />
+                            <input type="date" name="tanggal" defaultValue={f.tanggal_kegiatan ?? ''} max={hariIni()} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan" />
                             <span><button className="btn-mini">Simpan</button> <button formAction={hapusFoto} className="btn-mini">Hapus</button></span>
                           </form>
                         ) : <span>{f.keterangan ?? <span className="muted">Tanpa keterangan</span>}</span>}
