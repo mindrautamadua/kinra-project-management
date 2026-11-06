@@ -59,7 +59,7 @@ export default function Charter({ d, hariIni }: {
         <div><dt>PIC</dt><dd>{d.pics.length ? d.pics.map(x => x.nama).join(', ') : p.pic?.nama ?? '–'}
           {d.pics.length === 1 ? d.pics[0].jabatan && <small>{d.pics[0].jabatan}</small> : d.pics.length > 1 ? <small>PIC utama: {d.pics[0].nama}</small> : p.pic?.jabatan && <small>{p.pic.jabatan}</small>}</dd></div>
         {/* Sponsor sementara disembunyikan: <div><dt>Sponsor</dt><dd>{p.sponsor?.nama ?? <span className="ch-kosong">Belum diisi</span>}</dd></div> */}
-        <div><dt>Mulai – target</dt><dd>{tgl(p.tanggal_mulai)} – {tgl(r?.tanggal_selesai_baseline ?? p.tanggal_selesai)}{r?.versi_baseline && <small>Baseline v{r.versi_baseline}</small>}</dd></div>
+        <div><dt>Mulai – target</dt><dd>{tgl(p.tanggal_mulai)} – {tgl(r?.tanggal_selesai_baseline ?? p.tanggal_selesai)}</dd></div>
         <div><dt>Anggaran</dt><dd>{rupiah(p.anggaran_rp_juta)}</dd></div>
       </dl>
 
