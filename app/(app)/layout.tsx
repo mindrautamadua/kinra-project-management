@@ -1,4 +1,6 @@
 import { LogOut, UserRoundX } from 'lucide-react';
+import { Suspense } from 'react';
+import IndikatorProses from '@/components/client/IndikatorProses';
 import NavLinks from '@/components/client/NavLinks';
 import TombolTema from '@/components/client/TombolTema';
 import TombolSidebar from '@/components/client/TombolSidebar';
@@ -34,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="shell">
+      <Suspense fallback={null}><IndikatorProses /></Suspense>
       <aside className="sidebar">
         <div className="brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
