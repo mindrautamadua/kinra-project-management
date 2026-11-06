@@ -17,8 +17,8 @@ export default async function DaftarUpdate() {
     <>
       <section className="section first">
         <SectionHead no="03" eyebrow={`Update mingguan · ${periode.label}`}
-          judul={milikSaya.length ? (belum ? `${belum} dari ${milikSaya.length} proyek Anda belum diajukan` : `Semua ${milikSaya.length} proyek Anda sudah diajukan`) : 'Tidak ada proyek aktif yang Anda kelola'}>
-          <p className="muted">Isi progres aktivitas, yang telah dilakukan, rencana minggu depan, dan PICA. Angka progres dan status dihitung sistem. Update yang diajukan langsung final dan masih dapat diedit sampai periode ditutup.</p>
+          judul={milikSaya.length ? (belum ? `${belum} dari ${milikSaya.length} proyek Anda belum terverifikasi` : `Semua ${milikSaya.length} proyek Anda sudah terverifikasi`) : 'Tidak ada proyek aktif yang Anda kelola'}>
+          <p className="muted">Isi progres aktivitas, yang telah dilakukan, rencana minggu depan, dan PICA. Angka progres dan status dihitung sistem. Update yang disimpan dan diverifikasi langsung final tanpa review, dan masih dapat diedit sampai periode ditutup.</p>
         </SectionHead>
         <Daftar proyek={milikSaya} perProyek={perProyek} kosong="Anda belum menjadi PIC atau pengelola proyek aktif." />
       </section>

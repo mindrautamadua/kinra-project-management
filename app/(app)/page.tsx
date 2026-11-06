@@ -61,7 +61,7 @@ export default async function Dasbor({ searchParams }: { searchParams: Cari }) {
     { lbl: 'Kritis', val: n('kritis'), meta: 'SPI < 0,70 atau lewat tenggat', f: 'kritis', cls: 'crit' },
     { lbl: 'Terlambat · Waspada', val: `${n('terlambat')} · ${n('waspada')}`, meta: 'SPI 0,70–0,95', f: 'perhatian' },
     { lbl: 'Sesuai rencana', val: n('sesuai'), meta: 'SPI ≥ 0,95' },
-    { lbl: 'Update diajukan', val: aktif.length ? `${Math.round((100 * tepat) / aktif.length)}%` : '–', meta: `${tepat} dari ${aktif.length} · target ≥ 95%` },
+    { lbl: 'Update terverifikasi', val: aktif.length ? `${Math.round((100 * tepat) / aktif.length)}%` : '–', meta: `${tepat} dari ${aktif.length} · target ≥ 95%` },
     { lbl: 'Dukungan menunggu', val: dukunganUnit.length, meta: `${telat} lewat tenggat` },
   ];
 
@@ -97,7 +97,7 @@ export default async function Dasbor({ searchParams }: { searchParams: Cari }) {
             <h3>Pemeriksaan otomatis minggu ini</h3>
             <p className="muted small">Hal yang dulu lolos di laporan slide</p>
             <div className="checks">
-              <Cek n={cek.belumDiajukan.length} t="Update belum diajukan" d={cek.belumDiajukan.map(p => p.kode).join(', ')} />
+              <Cek n={cek.belumDiajukan.length} t="Update belum terverifikasi" d={cek.belumDiajukan.map(p => p.kode).join(', ')} />
               <Cek n={cek.rebaseline.length} t="Baseline diganti minggu ini" d={cek.rebaseline.map(p => p.kode).join(', ')} />
               <Cek n={cek.aksiTerlambat} t="Aksi korektif lewat target" d="Status terbuka/berjalan, tanggal target terlewati" />
               <Cek n={cek.drafTanpaData.length} t="Proyek draf tanpa tanggal" d={cek.drafTanpaData.map(p => p.kode).join(', ')} />

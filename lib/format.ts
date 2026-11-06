@@ -44,8 +44,8 @@ export const KESEHATAN: Record<Kesehatan, { kode: KodeStatus; label: string }> =
 
 export const STATUS_UPDATE: Record<string, { kode: KodeStatus; label: string }> = {
   draf: { kode: 'na', label: 'Draf' },
-  diajukan: { kode: 'info', label: 'Diajukan' },
-  direview: { kode: 'info', label: 'Direview' },
+  diajukan: { kode: 'good', label: 'Terverifikasi' },
+  direview: { kode: 'good', label: 'Terverifikasi' },
   dikembalikan: { kode: 'warn', label: 'Dikembalikan' },
   disetujui: { kode: 'good', label: 'Disetujui' },
   terkunci: { kode: 'good', label: 'Terkunci' },
@@ -59,8 +59,10 @@ export const STATUS_PROYEK: Record<string, string> = {
 // Database tetap sumber kebenaran saat update diajukan.
 export function hitungKesehatan(rencana: N, aktual: N, selesaiBaseline: string | null, jmlAktivitas: number, tanggal: string): Kesehatan {
   if (!jmlAktivitas || !selesaiBaseline) return 'data_belum_lengkap';
-  if (tanggal > selesaiBaseline) return 'kritis';
   const r = rencana ?? 0, a = aktual ?? 0;
+  // Seluruh aktivitas tuntas: tidak Kritis walau lewat tanggal selesai baseline, tinggal ditutup Selesai.
+  if (a >= 100) return 'sesuai';
+  if (tanggal > selesaiBaseline) return 'kritis';
   if (r === 0 && a === 0) return 'belum_mulai';
   if (r < 10) return r - a <= 5 ? 'sesuai' : r - a <= 10 ? 'waspada' : 'terlambat';
   const spi = a / r;

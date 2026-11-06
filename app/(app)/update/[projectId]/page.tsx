@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CircleCheck, Send, TriangleAlert } from 'lucide-react';
+import { CircleCheck, TriangleAlert } from 'lucide-react';
 import { ChipKesehatan, ChipUpdate, SectionHead } from '@/components/Chip';
 import FotoAktivitas from '@/components/client/FotoAktivitas';
 import WajibTanggalSelesai from '@/components/client/WajibTanggalSelesai';
@@ -55,7 +55,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
         <div className="crumb-back"><Link href="/update">← Update mingguan</Link> · <Link href={`/proyek/${p.id}`}>Detail proyek</Link></div>
         <SectionHead no={p.kode} eyebrow={`Update ${periode.label} · batas ${tgl(periode.batas_input.slice(0, 10))}`} judul={p.nama} />
         <div className="row aksi-atas"><ChipUpdate status={ini?.status ?? null} />
-          {sudahDiajukan && ini?.diajukan_at && <span className="small muted">Diajukan {tgl(ini.diajukan_at)} · masih dapat diedit sampai periode ditutup</span>}
+          {sudahDiajukan && ini?.diajukan_at && <span className="small muted">Terverifikasi {tgl(ini.diajukan_at)} · masih dapat diedit sampai periode ditutup</span>}
         </div>
         {galat && <div className="pesan galat" role="alert"><TriangleAlert size={16} aria-hidden="true" />{galat}</div>}
         {ok && <div className="pesan ok" role="status"><CircleCheck size={16} aria-hidden="true" />{ok}</div>}
@@ -65,8 +65,8 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
         <div className="tiles tiles-4">
           <div className="tile"><div className="lbl">% rencana per {tgl(periode.tanggal_akhir, false)}</div><div className="val tnum">{persen(rencana)}</div><div className="meta">Dari baseline aktif</div></div>
           <div className="tile"><div className="lbl">% aktual</div><div className="val tnum">{persen(aktual)}</div><div className="meta">Dari progres tersimpan</div></div>
-          <div className="tile"><div className="lbl">Status bila diajukan</div><div className="val val-sm"><ChipKesehatan status={akhir} override={!!ini?.status_override} /></div><div className="meta">Dihitung sistem</div></div>
-          <div className="tile"><div className="lbl">PICA</div><div className="val tnum">{d.masalah.filter(m => m.status === 'terbuka').length}</div><div className="meta">{butuhPica ? <span className="flag">Wajib ada sebelum diajukan</span> : 'masalah terbuka'}</div></div>
+          <div className="tile"><div className="lbl">Status bila diverifikasi</div><div className="val val-sm"><ChipKesehatan status={akhir} override={!!ini?.status_override} /></div><div className="meta">Dihitung sistem</div></div>
+          <div className="tile"><div className="lbl">PICA</div><div className="val tnum">{d.masalah.filter(m => m.status === 'terbuka').length}</div><div className="meta">{butuhPica ? <span className="flag">Wajib ada sebelum diverifikasi</span> : 'masalah terbuka'}</div></div>
         </div>
       </section>
 
@@ -137,7 +137,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
               {sudahDiajukan
                 ? <button className="btn primary" formAction={ajukan}>Simpan perubahan</button>
                 : <><button className="btn" formAction={simpanDraf}>Simpan draf</button>
-                  <button className="btn primary" formAction={ajukan}><Send size={15} aria-hidden="true" />Simpan &amp; ajukan</button></>}
+                  <button className="btn primary" formAction={ajukan}><CircleCheck size={15} aria-hidden="true" />Simpan &amp; verifikasi</button></>}
             </div>
           )}
         </fieldset>

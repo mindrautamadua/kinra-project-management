@@ -73,7 +73,7 @@ export async function ajukan(form: FormData) {
   const sudah = lama?.status === 'diajukan';
   // Update yang sudah diajukan disimpan ulang dengan status yang sama; database menghitung ulang progres dan status.
   const { error } = await sb.from('project_updates').update({ status: 'diajukan' }).eq('id', r.updateId);
-  kembali(r.projectId, error ? { galat: error.message } : { ok: sudah ? 'Perubahan update tersimpan.' : 'Update diajukan.' });
+  kembali(r.projectId, error ? { galat: error.message } : { ok: sudah ? 'Perubahan update tersimpan.' : 'Update tersimpan dan terverifikasi.' });
 }
 
 const KEPARAHAN = ['rendah', 'sedang', 'tinggi', 'kritis'];
