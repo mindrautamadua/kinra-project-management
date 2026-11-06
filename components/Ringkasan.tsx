@@ -95,7 +95,7 @@ export default function Ringkasan({ r, halaman }: { r: Data; halaman?: number })
   const j = r.jumlah;
   const catatan = (r.catatan ?? '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 3);
   const ubah = r.perubahan;
-  const adaUbah = ubah.selesai.length + ubah.baseline.length + ubah.baru.length > 0;
+  const adaUbah = ubah.selesai.length + ubah.baru.length > 0;
   const poin = poinPendukung(r);
   const n = r.aktif.length;
   const bidang = r.bidang.map(b => ({ ...b, total: b.kritis + b.terlambat + b.waspada + b.sesuai + b.lainnya }))
@@ -202,10 +202,9 @@ export default function Ringkasan({ r, halaman }: { r: Data; halaman?: number })
       <div className="rs-grid-bawah">
         <section className="rs-box">
           <h3>4. Perubahan {JENDELA_PERUBAHAN} hari terakhir</h3>
-          {!adaUbah ? <p className="rs-kosong">Tidak ada proyek selesai, baseline diganti, atau proyek baru.</p> : (
+          {!adaUbah ? <p className="rs-kosong">Tidak ada proyek selesai atau proyek baru.</p> : (
             <ul>
               {ubah.selesai.length > 0 && <li><b>Selesai:</b> {ringkas(ubah.selesai.map(p => `${p.kode} ${p.nama}`), 3)}</li>}
-              {ubah.baseline.length > 0 && <li><b>Baseline diganti:</b> {ringkas(ubah.baseline.map(p => `${p.kode} (v${p.versi})`), 6)}</li>}
               {ubah.baru.length > 0 && <li><b>Proyek baru:</b> {ubah.baru.length > 4 ? `${ubah.baru.length} proyek (${ringkas(ubah.baru.map(p => p.kode), 6)})` : ringkas(ubah.baru.map(p => `${p.kode} ${p.nama}`))}</li>}
             </ul>
           )}

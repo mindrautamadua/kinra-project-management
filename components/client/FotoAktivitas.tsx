@@ -124,12 +124,14 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, fo
             <div key={p.pratinjau} className="foto-ket">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.pratinjau} alt="" />
-              <div>
+              <div className="foto-ket-isi">
                 <textarea rows={2} value={p.ket} placeholder="Keterangan foto ini" aria-label={`Keterangan foto ${i + 1}`}
                   onChange={e => ubah(i, { ket: e.target.value })} />
-                <label className="small">Tanggal pelaksanaan{p.exif ? <span className="muted"> · dari kamera</span> : <span className="flag"> · wajib diisi</span>}
+                <label className="foto-ket-tgl">
+                  <span>Tanggal pelaksanaan</span>
                   <input id={`tgl-${activityId}-${i}`} type="date" required value={p.tgl} max={hariIni} aria-label={`Tanggal pelaksanaan foto ${i + 1}`}
                     onChange={e => ubah(i, { tgl: e.target.value, exif: false })} />
+                  {p.exif ? <span className="muted">dari kamera</span> : !p.tgl && <span className="flag">wajib diisi</span>}
                 </label>
               </div>
             </div>
@@ -154,11 +156,15 @@ function KeteranganFoto({ f, projectId, hariIni }: { f: Foto; projectId: string;
     <div className="foto-ket">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {f.url ? <img src={f.url} alt="" /> : <span className="foto-hilang" />}
-      <div>
+      <div className="foto-ket-isi">
         <textarea rows={2} value={ket} disabled={!f.bisaUbah} placeholder="Keterangan foto ini" aria-label="Keterangan foto"
           onChange={e => { setKet(e.target.value); setHasil(null); }} />
-        <input type="date" value={tanggal} max={hariIni} disabled={!f.bisaUbah} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan"
-          onChange={e => { setTanggal(e.target.value); setHasil(null); }} />
+        <label className="foto-ket-tgl">
+          <span>Tanggal pelaksanaan</span>
+          <input type="date" value={tanggal} max={hariIni} disabled={!f.bisaUbah} aria-label="Tanggal pelaksanaan kegiatan"
+            onChange={e => { setTanggal(e.target.value); setHasil(null); }} />
+          {!tanggal && f.bisaUbah && <span className="flag">belum diisi</span>}
+        </label>
         {f.bisaUbah && (
           <div className="foto-ket-aksi">
             {berubah && (

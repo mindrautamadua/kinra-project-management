@@ -20,7 +20,7 @@ export interface Ringkasan {
   keputusan: Permintaan[];
   dukunganLain: number;
   perhatian: (ProyekKesehatan & { masalah: string | null; tindakan: string | null })[];
-  perubahan: { selesai: { kode: string; nama: string }[]; baseline: { kode: string; nama: string; versi: number }[]; baru: { kode: string; nama: string }[] };
+  perubahan: { selesai: { kode: string; nama: string }[]; baru: { kode: string; nama: string }[] };
   mendatang: { kode: string; aktivitas: string; tanggal: string; milestone: boolean; proyek: string }[];
   isuUnit: { judul: string; keparahan: string; unit: string }[];
 }
@@ -70,13 +70,12 @@ export async function muatRingkasan(pilihan?: Set<string>): Promise<Ringkasan> {
     .sort((a, b) => peringkat(b.status_kesehatan) - peringkat(a.status_kesehatan) || (a.spi ?? 0) - (b.spi ?? 0))
     .slice(0, 5);
 
-  const [{ data: dukungan }, { data: issues }, { data: selesai }, { data: baseline }, { data: baru }, { data: akt }, { data: isu }] = await Promise.all([
+  const [{ data: dukungan }, { data: issues }, { data: selesai }, { data: baru }, { data: akt }, { data: isu }] = await Promise.all([
     sb.from('v_dukungan_terbuka').select('id,jenis,permintaan,dampak_bila_tidak,tenggat,proyek_kode,ditujukan_nama,diajukan_nama,lewat_tenggat').order('tenggat'),
     idsPerhatian.length
       ? sb.from('issues').select('project_id,judul,created_at,actions(deskripsi,status)').in('project_id', idsPerhatian.map(p => p.id)).eq('status', 'terbuka').order('created_at', { ascending: false })
       : Promise.resolve({ data: [] }),
     sb.from('projects').select('kode,nama').eq('status', 'selesai').gte('tanggal_selesai_aktual', sejak),
-    sb.from('baselines').select('versi,projects!baselines_project_id_fkey(kode,nama)').eq('status', 'disetujui').gt('versi', 1).gte('diputuskan_at', sejak),
     sb.from('projects').select('kode,nama').gte('created_at', sejak),
     sb.from('activities').select('nama,rencana_selesai,milestone,status,projects!inner(kode,nama,status)')
       .eq('projects.status', 'aktif').not('status', 'in', '(selesai,dibatalkan)').gte('rencana_selesai', hari).lte('rencana_selesai', tambahHari(hari, 28)),
@@ -105,8 +104,6 @@ export async function muatRingkasan(pilihan?: Set<string>): Promise<Ringkasan> {
     perhatian,
     perubahan: {
       selesai: ((selesai ?? []) as { kode: string; nama: string }[]).filter(p => masuk(p.kode)),
-      baseline: ((baseline ?? []) as unknown as { versi: number; projects: { kode: string; nama: string } | null }[])
-        .flatMap(b => (b.projects && masuk(b.projects.kode) ? [{ ...b.projects, versi: b.versi }] : [])),
       baru: ((baru ?? []) as { kode: string; nama: string }[]).filter(p => masuk(p.kode)),
     },
     mendatang: ((akt ?? []) as unknown as Akt[]).filter(a => masuk(a.projects.kode))
