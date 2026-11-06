@@ -27,16 +27,17 @@ export function PembukaLampiran({ halaman, daftar, hariIni }: { halaman: number;
 
 export const FOTO_PER_HALAMAN = 6;
 
-// Satu halaman foto kegiatan untuk satu proyek (maksimal 6 foto); proyek dengan foto lebih banyak berlanjut ke halaman berikutnya.
-export function HalamanFoto({ halaman, huruf, kode, nama, foto, aktivitas, ke, dari }: {
-  halaman: number; huruf: string; kode: string; nama: string; foto: FotoKegiatan[];
+// Satu halaman foto kegiatan untuk satu proyek (maksimal 6 foto), dicetak tepat setelah charter proyeknya;
+// proyek dengan foto lebih banyak berlanjut ke halaman berikutnya.
+export function HalamanFoto({ halaman, kode, nama, foto, aktivitas, ke, dari }: {
+  halaman: number; kode: string; nama: string; foto: FotoKegiatan[];
   aktivitas: Map<string, Aktivitas>; ke: number; dari: number;
 }) {
   return (
     <article className="isi-page foto-page">
       <header className="ch-head">
         <div>
-          <div className="eyebrow">Lampiran {huruf} · Hal. {halaman} · Foto kegiatan{dari > 1 ? ` (${ke}/${dari})` : ''}</div>
+          <div className="eyebrow">Hal. {halaman} · Lampiran charter · Foto kegiatan{dari > 1 ? ` (${ke}/${dari})` : ''}</div>
           <h2><span className="ch-kode">{kode}</span> {nama}</h2>
         </div>
       </header>

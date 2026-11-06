@@ -4,6 +4,8 @@ import Charter from '@/components/Charter';
 import Cover from '@/components/Cover';
 import LampiranKebutuhan from '@/components/LampiranKebutuhan';
 import { type EntriLampiran, FOTO_PER_HALAMAN, HalamanFoto, PembukaLampiran } from '@/components/LampiranFoto';
+import type { HalamanProyek } from '@/components/Cover';
+import { Fragment } from 'react';
 import Ringkasan from '@/components/Ringkasan';
 import { muatRingkasan } from '@/lib/ringkasan';
 import { SectionHead } from '@/components/Chip';
@@ -51,23 +53,24 @@ export default async function Laporan({ searchParams }: { searchParams: Cari }) 
   const ringkasan = paket ? await muatRingkasan(sebagian ? new Set(tercetak.map(p => p.id)) : undefined) : null;
   const belumLengkap = detail.filter(d => { const k = kelengkapan(d); return k.terisi < k.total; }).length;
 
-  // Lampiran: halaman pembatas, kebutuhan digitalisasi (opsional), lalu foto kegiatan per proyek (6 foto per halaman).
+  // Foto kegiatan dicetak tepat di bawah charter proyeknya (6 foto per halaman); lampiran kebutuhan digitalisasi (opsional) di akhir.
   const foto = adaFoto ? await muatFoto(detail.flatMap(d => d.aktivitas.map(a => a.id))) : [];
   const fotoProyek = detail.map(d => ({ d, foto: foto.filter(f => d.aktivitas.some(a => a.id === f.activity_id)) })).filter(x => x.foto.length);
-  const halPembuka = (ringkasan ? 4 : 3) + detail.length;
-  const daftarLampiran: EntriLampiran[] = [];
-  let hal = halPembuka + 1;
-  if (lampiran) daftarLampiran.push({ hal: hal++, judul: 'Kebutuhan digitalisasi per bagian' });
-  const halamanFoto = fotoProyek.flatMap(({ d, foto: f }) => {
+  let hal = ringkasan ? 4 : 3;
+  const halaman = new Map<string, HalamanProyek>();
+  const halamanFoto = new Map(detail.map(d => {
+    const f = foto.filter(x => d.aktivitas.some(a => a.id === x.activity_id));
     const jumlah = Math.ceil(f.length / FOTO_PER_HALAMAN);
-    daftarLampiran.push({ hal, judul: `Foto kegiatan ${d.proyek.kode} ${d.proyek.nama}`, ket: `${f.length} foto · ${jumlah} halaman` });
-    const huruf = String.fromCharCode(64 + daftarLampiran.length);
+    const halCharter = hal++;
+    halaman.set(d.proyek.id, { charter: halCharter, ...(jumlah && { foto: { hal, ket: `${f.length} foto · ${jumlah} halaman` } }) });
     const aktivitas = new Map(d.aktivitas.map(a => [a.id, a]));
-    return Array.from({ length: jumlah }, (_, i) => ({
-      key: `${d.proyek.id}-${i}`, halaman: hal++, huruf, kode: d.proyek.kode, nama: d.proyek.nama,
+    return [d.proyek.id, Array.from({ length: jumlah }, (_, i) => ({
+      key: `${d.proyek.id}-${i}`, halaman: hal++, kode: d.proyek.kode, nama: d.proyek.nama,
       foto: f.slice(i * FOTO_PER_HALAMAN, (i + 1) * FOTO_PER_HALAMAN), aktivitas, ke: i + 1, dari: jumlah,
-    }));
-  });
+    }))] as const;
+  }));
+  const halPembuka = hal;
+  const daftarLampiran: EntriLampiran[] = lampiran ? [{ hal: halPembuka + 1, judul: 'Kebutuhan digitalisasi per bagian' }] : [];
   const adaLampiran = detail.length > 0 && daftarLampiran.length > 0;
 
   return (
@@ -87,7 +90,7 @@ export default async function Laporan({ searchParams }: { searchParams: Cari }) 
             <input type="search" name="q" defaultValue={cari} placeholder="Cari kode, nama proyek, PIC, unit" aria-label="Cari charter" />
           </form>
           {cari && <Link href={href(unit)} className="btn-mini">Hapus pencarian</Link>}
-          {detail.length > 0 && <TombolCetak label={`${paket ? `Cetak paket Direktur (${detail.length + 1} bagian)` : `Cetak ${detail.length} charter`}${adaLampiran ? ' + lampiran' : ''}`} />}
+          {detail.length > 0 && <TombolCetak label={`${paket ? `Cetak paket Direktur (${detail.length + 1} bagian)` : `Cetak ${detail.length} charter`}${fotoProyek.length || adaLampiran ? ' + lampiran' : ''}`} />}
           {paket ? <Link href={href(unit, { paket: false })} className="btn-mini">Tanpa ringkasan</Link> : <Link href={href(unit, { paket: true })} className="btn-mini">Tambah ringkasan eksekutif di depan</Link>}
           <Link href={href(unit, { lampiran: !lampiran })} className="btn-mini">{lampiran ? 'Tanpa lampiran kebutuhan digitalisasi' : 'Tambah lampiran kebutuhan digitalisasi'}</Link>
           <Link href={href(unit, { foto: !adaFoto })} className="btn-mini">{adaFoto ? `Tanpa lampiran foto (${foto.length} foto dari ${fotoProyek.length} proyek)` : 'Tambah lampiran foto kegiatan'}</Link>
@@ -114,13 +117,17 @@ export default async function Laporan({ searchParams }: { searchParams: Cari }) 
           </details>
         )}
       </div>
-      {detail.length > 0 && <Cover unitLabel={sampul} proyek={tercetak} adaRingkasan={!!ringkasan} lampiran={adaLampiran ? [{ hal: halPembuka, judul: 'Lampiran' }, ...daftarLampiran] : []} hariIni={hariIni()} />}
+      {detail.length > 0 && <Cover unitLabel={sampul} proyek={tercetak} adaRingkasan={!!ringkasan} halaman={halaman} lampiran={adaLampiran ? [{ hal: halPembuka, judul: 'Lampiran' }, ...daftarLampiran] : []} hariIni={hariIni()} />}
       {ringkasan && <Ringkasan r={ringkasan} />}
       {detail.length === 0 && <div className="card kosong layar-saja">{pilih && calon.length ? 'Belum ada proyek yang dipilih. Centang minimal satu proyek.' : `Tidak ada proyek yang cocok${cari ? ` dengan "${cari}"` : ''}.`}</div>}
-      {detail.map(d => <Charter key={d.proyek.id} d={d} hariIni={hariIni()} orang={nama} />)}
+      {detail.map(d => (
+        <Fragment key={d.proyek.id}>
+          <Charter d={d} hariIni={hariIni()} orang={nama} />
+          {halamanFoto.get(d.proyek.id)?.map(({ key, ...h }) => <HalamanFoto key={key} {...h} />)}
+        </Fragment>
+      ))}
       {adaLampiran && <PembukaLampiran halaman={halPembuka} daftar={daftarLampiran} hariIni={hariIni()} />}
       {adaLampiran && lampiran && <LampiranKebutuhan halaman={halPembuka + 1} />}
-      {halamanFoto.map(({ key, ...h }) => <HalamanFoto key={key} {...h} />)}
     </section>
   );
 }

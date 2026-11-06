@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Chip, ChipKesehatan } from '@/components/Chip';
 import { KESEHATAN, persen, tgl } from '@/lib/format';
 import type { Kesehatan, ProyekKesehatan } from '@/lib/types';
@@ -6,13 +7,14 @@ const URUT_STATUS: Kesehatan[] = ['kritis', 'terlambat', 'waspada', 'sesuai', 'b
 
 // Dua halaman pembuka laporan cetak, mengikuti panduan-ui-ux-kinra.md: sampul (panel brand Tosca dengan motif
 // lingkaran bertumpuk + ringkasan portofolio berangka) lalu daftar isi.
-// Nomor halaman mengikuti urutan cetak: sampul, daftar isi, ringkasan eksekutif (bila ada), satu charter per proyek, lalu lampiran.
-export default function Cover({ unitLabel, proyek, adaRingkasan, lampiran = [], hariIni }: {
-  unitLabel: string; proyek: ProyekKesehatan[]; adaRingkasan: boolean; lampiran?: { hal: number; judul: string }[]; hariIni: string;
+// Nomor halaman mengikuti urutan cetak: sampul, daftar isi, ringkasan eksekutif (bila ada), charter per proyek diikuti foto kegiatannya, lalu lampiran.
+export type HalamanProyek = { charter: number; foto?: { hal: number; ket: string } };
+
+export default function Cover({ unitLabel, proyek, adaRingkasan, halaman, lampiran = [], hariIni }: {
+  unitLabel: string; proyek: ProyekKesehatan[]; adaRingkasan: boolean; halaman: Map<string, HalamanProyek>; lampiran?: { hal: number; judul: string }[]; hariIni: string;
 }) {
   const jumlah = new Map<Kesehatan, number>();
   for (const p of proyek) if (p.status_kesehatan) jumlah.set(p.status_kesehatan, (jumlah.get(p.status_kesehatan) ?? 0) + 1);
-  const awalCharter = adaRingkasan ? 4 : 3;
   const sesuai = jumlah.get('sesuai') ?? 0;
   const selesai = jumlah.get('selesai') ?? 0;
   const berjalan = proyek.filter(p => p.status === 'aktif').length;
@@ -103,16 +105,19 @@ export default function Cover({ unitLabel, proyek, adaRingkasan, lampiran = [], 
           <thead><tr><th>Hal.</th><th>Kode</th><th>Proyek</th><th>PIC</th><th>Progres</th><th>Status</th></tr></thead>
           <tbody>
             {adaRingkasan && <tr><td className="tnum">3</td><td /><td colSpan={4}><b>Ringkasan eksekutif</b></td></tr>}
-            {proyek.map((p, i) => (
-              <tr key={p.id}>
-                <td className="tnum">{awalCharter + i}</td>
-                <td className="mono">{p.kode}</td>
-                <td>{p.nama}</td>
-                <td>{p.pic_nama}</td>
-                <td className="tnum">{persen(p.progres_aktual)} <span className="muted">/ {persen(p.progres_rencana)}</span></td>
-                <td><ChipKesehatan status={p.status_kesehatan} override={p.ada_override} /></td>
-              </tr>
-            ))}
+            {proyek.map(p => { const h = halaman.get(p.id); return (
+              <Fragment key={p.id}>
+                <tr>
+                  <td className="tnum">{h?.charter}</td>
+                  <td className="mono">{p.kode}</td>
+                  <td>{p.nama}</td>
+                  <td>{p.pic_nama}</td>
+                  <td className="tnum">{persen(p.progres_aktual)} <span className="muted">/ {persen(p.progres_rencana)}</span></td>
+                  <td><ChipKesehatan status={p.status_kesehatan} override={p.ada_override} /></td>
+                </tr>
+                {h?.foto && <tr><td className="tnum">{h.foto.hal}</td><td /><td colSpan={4}><span className="isi-sub">Foto kegiatan <span className="muted">· {h.foto.ket}</span></span></td></tr>}
+              </Fragment>
+            ); })}
             {lampiran.map((x, i) => (
               <tr key={i}><td className="tnum">{x.hal}</td><td /><td colSpan={4}>{i === 0 ? <b>{x.judul}</b> : <span className="isi-sub">{String.fromCharCode(64 + i)}. {x.judul}</span>}</td></tr>
             ))}
