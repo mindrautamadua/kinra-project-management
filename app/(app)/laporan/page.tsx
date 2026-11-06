@@ -62,7 +62,7 @@ export default async function Laporan({ searchParams }: { searchParams: Cari }) 
     const jumlah = Math.ceil(f.length / FOTO_PER_HALAMAN);
     daftarLampiran.push({ hal, judul: `Foto kegiatan ${d.proyek.kode} ${d.proyek.nama}`, ket: `${f.length} foto · ${jumlah} halaman` });
     const huruf = String.fromCharCode(64 + daftarLampiran.length);
-    const aktivitas = new Map(d.aktivitas.map(a => [a.id, `${a.urutan}. ${a.nama}`]));
+    const aktivitas = new Map(d.aktivitas.map(a => [a.id, a]));
     return Array.from({ length: jumlah }, (_, i) => ({
       key: `${d.proyek.id}-${i}`, halaman: hal++, huruf, kode: d.proyek.kode, nama: d.proyek.nama,
       foto: f.slice(i * FOTO_PER_HALAMAN, (i + 1) * FOTO_PER_HALAMAN), aktivitas, ke: i + 1, dari: jumlah,

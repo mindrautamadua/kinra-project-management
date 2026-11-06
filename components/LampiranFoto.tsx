@@ -1,5 +1,5 @@
-import { tgl } from '@/lib/format';
-import type { FotoKegiatan } from '@/lib/types';
+import { tanggalPelaksanaanFoto, tgl } from '@/lib/format';
+import type { Aktivitas, FotoKegiatan } from '@/lib/types';
 
 export type EntriLampiran = { hal: number; judul: string; ket?: string };
 
@@ -30,7 +30,7 @@ export const FOTO_PER_HALAMAN = 6;
 // Satu halaman foto kegiatan untuk satu proyek (maksimal 6 foto); proyek dengan foto lebih banyak berlanjut ke halaman berikutnya.
 export function HalamanFoto({ halaman, huruf, kode, nama, foto, aktivitas, ke, dari }: {
   halaman: number; huruf: string; kode: string; nama: string; foto: FotoKegiatan[];
-  aktivitas: Map<string, string>; ke: number; dari: number;
+  aktivitas: Map<string, Aktivitas>; ke: number; dari: number;
 }) {
   return (
     <article className="isi-page foto-page">
@@ -41,17 +41,17 @@ export function HalamanFoto({ halaman, huruf, kode, nama, foto, aktivitas, ke, d
         </div>
       </header>
       <div className="foto-grid">
-        {foto.map(f => (
+        {foto.map(f => { const a = aktivitas.get(f.activity_id); const kapan = tanggalPelaksanaanFoto(f, a); return (
           <figure key={f.id}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {f.url ? <img src={f.url} alt={f.keterangan ?? f.nama_file} /> : <div className="foto-hilang">File tidak tersedia</div>}
             <figcaption>
-              <b>{aktivitas.get(f.activity_id) ?? 'Aktivitas'}</b>
+              <b>{a ? `${a.urutan}. ${a.nama}` : 'Aktivitas'}</b>
               {f.keterangan && <span>{f.keterangan}</span>}
-              <span className="muted">{tgl(f.tanggal_kegiatan ?? f.created_at.slice(0, 10))}</span>
+              {kapan && <span className="muted">Pelaksanaan {kapan}</span>}
             </figcaption>
           </figure>
-        ))}
+        ); })}
       </div>
     </article>
   );

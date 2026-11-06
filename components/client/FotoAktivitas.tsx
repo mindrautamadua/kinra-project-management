@@ -19,12 +19,12 @@ async function perkecil(f: File): Promise<File> {
   return blob ? new File([blob], f.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : f;
 }
 
-type Foto = { id: string; url: string | null; keterangan: string | null; bisaUbah: boolean };
+type Foto = { id: string; url: string | null; keterangan: string | null; bisaUbah: boolean; tanggal: string };
 
 // Unggah foto kegiatan dari baris aktivitas di form update mingguan, dengan keterangan per foto.
 // Berada di dalam form update, jadi isiannya tanpa atribut name (tidak ikut terkirim) dan dikirim lewat tombolnya sendiri.
-export default function FotoAktivitas({ projectId, activityId, nama, hariIni, foto }: {
-  projectId: string; activityId: string; nama: string; hariIni: string; foto: Foto[];
+export default function FotoAktivitas({ projectId, activityId, nama, hariIni, tanggalAwal, foto }: {
+  projectId: string; activityId: string; nama: string; hariIni: string; tanggalAwal: string; foto: Foto[];
 }) {
   const berkas = useRef<HTMLInputElement>(null);
   const tanggal = useRef<HTMLInputElement>(null);
@@ -41,6 +41,7 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, fo
 
   function unggah() {
     if (pilihan.length === 0) { setHasil({ ok: false, pesan: 'Pilih minimal satu foto.' }); return; }
+    if (!tanggal.current?.value) { setHasil({ ok: false, pesan: 'Isi tanggal pelaksanaan kegiatan pada foto.' }); tanggal.current?.focus(); return; }
     mulai(async () => {
       setHasil(null);
       try {
@@ -75,7 +76,9 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, fo
           {foto.length > 0 && <div className="small muted">Keterangan foto yang sudah diunggah</div>}
           {foto.map(f => <KeteranganFoto key={f.id} f={f} projectId={projectId} />)}
           <div className="small muted">Unggah foto baru</div>
-          <input ref={tanggal} type="date" defaultValue={hariIni} aria-label={`Tanggal kegiatan ${nama}`} />
+          <label className="small">Tanggal pelaksanaan kegiatan (bukan tanggal unggah)
+            <input ref={tanggal} type="date" defaultValue={tanggalAwal} max={hariIni} aria-label={`Tanggal pelaksanaan kegiatan ${nama}`} />
+          </label>
           <input ref={berkas} type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={pilih} aria-label={`Foto ${nama}`} />
           {pilihan.map((p, i) => (
             <div key={p.pratinjau} className="foto-ket">
@@ -97,9 +100,10 @@ export default function FotoAktivitas({ projectId, activityId, nama, hariIni, fo
 
 function KeteranganFoto({ f, projectId }: { f: Foto; projectId: string }) {
   const [ket, setKet] = useState(f.keterangan ?? '');
+  const [tanggal, setTanggal] = useState(f.tanggal);
   const [hasil, setHasil] = useState<HasilUnggah | null>(null);
   const [proses, mulai] = useTransition();
-  const berubah = ket !== (f.keterangan ?? '');
+  const berubah = ket !== (f.keterangan ?? '') || tanggal !== f.tanggal;
   return (
     <div className="foto-ket">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -107,12 +111,14 @@ function KeteranganFoto({ f, projectId }: { f: Foto; projectId: string }) {
       <div>
         <textarea rows={2} value={ket} disabled={!f.bisaUbah} placeholder="Keterangan foto ini" aria-label="Keterangan foto"
           onChange={e => { setKet(e.target.value); setHasil(null); }} />
+        <input type="date" value={tanggal} disabled={!f.bisaUbah} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan"
+          onChange={e => { setTanggal(e.target.value); setHasil(null); }} />
         {f.bisaUbah && (
           <div className="foto-ket-aksi">
             {berubah && (
               <button type="button" className="btn-mini" disabled={proses}
-                onClick={() => mulai(async () => setHasil(await ubahKeteranganFoto(f.id, ket, projectId)))}>
-                Simpan keterangan
+                onClick={() => mulai(async () => setHasil(await ubahKeteranganFoto(f.id, ket, projectId, tanggal)))}>
+                Simpan
               </button>
             )}
             <button type="button" className="btn-mini btn-hapus" disabled={proses}

@@ -73,18 +73,22 @@ export async function hapusFoto(form: FormData) {
   await hapusFotoKegiatan(String(form.get('id') ?? ''), String(form.get('project_id') ?? ''));
 }
 
-export async function ubahKeteranganFoto(id: string, keterangan: string, projectId: string): Promise<HasilUnggah> {
+// tanggal: undefined = tidak diubah; '' = dikosongkan (keterangan foto memakai periode aktivitas).
+export async function ubahKeteranganFoto(id: string, keterangan: string, projectId: string, tanggal?: string): Promise<HasilUnggah> {
   const sb = await supabase();
-  const { data, error } = await sb.from('attachments').update({ keterangan: keterangan.trim() || null }).eq('id', id).select('id');
+  const isi: Record<string, string | null> = { keterangan: keterangan.trim() || null };
+  if (tanggal !== undefined) isi.tanggal_kegiatan = tanggal.trim() || null;
+  const { data, error } = await sb.from('attachments').update(isi).eq('id', id).select('id');
   if (error) return { ok: false, pesan: error.message };
   if (!data?.length) return { ok: false, pesan: 'Hanya pengunggah foto atau Admin yang dapat mengubah keterangan.' };
   revalidatePath(`/proyek/${projectId}`);
   revalidatePath(`/update/${projectId}`);
   revalidatePath('/laporan');
-  return { ok: true, pesan: 'Keterangan disimpan.' };
+  return { ok: true, pesan: 'Keterangan foto disimpan.' };
 }
 
 // Versi form untuk galeri di halaman detail proyek.
 export async function simpanKeteranganFoto(form: FormData) {
-  await ubahKeteranganFoto(String(form.get('id') ?? ''), String(form.get('keterangan') ?? ''), String(form.get('project_id') ?? ''));
+  await ubahKeteranganFoto(String(form.get('id') ?? ''), String(form.get('keterangan') ?? ''), String(form.get('project_id') ?? ''),
+    form.has('tanggal') ? String(form.get('tanggal') ?? '') : undefined);
 }

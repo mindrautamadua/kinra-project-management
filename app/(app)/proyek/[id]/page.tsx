@@ -6,7 +6,7 @@ import Gantt from '@/components/Gantt';
 import { detailProyek, profilAktif } from '@/lib/data';
 import { muatFoto } from '@/lib/foto';
 import { penggunaSaatIni } from '@/lib/sesi';
-import { angka, hariIni, persen, rupiah, STATUS_PROYEK, tgl } from '@/lib/format';
+import { angka, hariIni, persen, rupiah, STATUS_PROYEK, tgl, tanggalPelaksanaanFoto } from '@/lib/format';
 import { supabase } from '@/lib/supabase/server';
 import { hapusFoto, simpanKeteranganFoto } from '../actions-foto';
 
@@ -166,10 +166,11 @@ export default async function DetailProyek({ params }: { params: Promise<{ id: s
                           <form action={simpanKeteranganFoto} className="ket-form">
                             <input type="hidden" name="id" value={f.id} /><input type="hidden" name="project_id" value={p.id} />
                             <textarea name="keterangan" rows={2} defaultValue={f.keterangan ?? ''} placeholder="Keterangan foto ini" aria-label="Keterangan foto" />
-                            <span><button className="btn-mini">Simpan keterangan</button> <button formAction={hapusFoto} className="btn-mini">Hapus</button></span>
+                            <input type="date" name="tanggal" defaultValue={f.tanggal_kegiatan && f.tanggal_kegiatan !== f.created_at.slice(0, 10) ? f.tanggal_kegiatan : ''} aria-label="Tanggal pelaksanaan kegiatan" title="Tanggal pelaksanaan kegiatan" />
+                            <span><button className="btn-mini">Simpan</button> <button formAction={hapusFoto} className="btn-mini">Hapus</button></span>
                           </form>
                         ) : <span>{f.keterangan ?? <span className="muted">Tanpa keterangan</span>}</span>}
-                        <span className="muted small">{tgl(f.tanggal_kegiatan ?? f.created_at.slice(0, 10))} · {nama(f.diunggah_oleh)}</span>
+                        <span className="muted small">{tanggalPelaksanaanFoto(f, a) ? `Pelaksanaan ${tanggalPelaksanaanFoto(f, a)} · ` : ''}diunggah {nama(f.diunggah_oleh)}</span>
                       </figcaption>
                     </figure>
                   ))}

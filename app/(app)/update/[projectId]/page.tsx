@@ -97,8 +97,9 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
                           </select>
                         </td>
                         <td><input type="date" name={`selesai_${a.id}`} defaultValue={a.aktual_selesai ?? ''} aria-label={`Tanggal aktual selesai ${a.nama}`} /></td>
-                        <td><FotoAktivitas projectId={p.id} activityId={a.id} nama={a.nama} hariIni={hariIni()}
-                          foto={foto.filter(f => f.activity_id === a.id).map(f => ({ id: f.id, url: f.url, keterangan: f.keterangan, bisaUbah: admin || f.diunggah_oleh === saya.id }))} /></td>
+                        <td><FotoAktivitas projectId={p.id} activityId={a.id} nama={a.nama} hariIni={hariIni()} tanggalAwal={a.aktual_selesai ?? ''}
+                          foto={foto.filter(f => f.activity_id === a.id).map(f => ({ id: f.id, url: f.url, keterangan: f.keterangan, bisaUbah: admin || f.diunggah_oleh === saya.id,
+                            tanggal: f.tanggal_kegiatan && f.tanggal_kegiatan !== f.created_at.slice(0, 10) ? f.tanggal_kegiatan : '' }))} /></td>
                       </tr>
                     );
                   })}
