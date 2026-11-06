@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe Dasbor Proyek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --font-sans: "Nunito Sans"; --font-mono: "IBM Plex Mono";
+  --page: #041214; --surface: #0b1d20; --surface-2: #10262a; --surface-3: #163135;
+  --line-rgb: 190, 240, 240; --fg-rgb: 255, 255, 255; --shadow-rgb: 0, 0, 0; --shadow-k: 1;
+  --line: rgba(var(--line-rgb), 0.08); --line-2: rgba(var(--line-rgb), 0.14);
+  --card-bg: linear-gradient(180deg, rgba(16, 40, 44, 0.9), rgba(9, 27, 30, 0.92));
+  --ink: #eef6f6; --ink-2: #c2d3d4; --muted: #86a0a2;
+  --merah: #f15a22; --jingga: #fcaf17; --biru: #32a3dc; --tosca: #008187;
+  --s1: #2a96d0; --s2: #e0700f; --s3: #6f8385;
+  --good: #12b76a; --warn: #fab219; --serious: #ec835a; --crit: #f04438;
+  --txt-good: #6fd3a8; --txt-bad: #ff8a80;
+  --brand: #3cc2c6;
+  --radius: 18px; --radius-sm: 12px;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --note: #fcaf17;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --page: #eef3f3; --surface: #ffffff; --surface-2: #f3f7f7; --surface-3: #e4eded;
+  --line-rgb: 12, 60, 66; --fg-rgb: 10, 50, 56; --shadow-rgb: 16, 48, 52; --shadow-k: 0.35;
+  --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 252, 252, 0.96));
+  --ink: #0f2629; --ink-2: #34494c; --muted: #587073; --s3: #7d8f91;
+  --good: #0e9258; --warn: #b77b06; --serious: #c95b2c; --crit: #d92d20;
+  --txt-good: #0b7a4a; --txt-bad: #c4320a;
+  --brand: #00797e; --note: #b45309;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --page: #eef3f3; --surface: #ffffff; --surface-2: #f3f7f7; --surface-3: #e4eded;
+    --line-rgb: 12, 60, 66; --fg-rgb: 10, 50, 56; --shadow-rgb: 16, 48, 52; --shadow-k: 0.35;
+    --card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 252, 252, 0.96));
+    --ink: #0f2629; --ink-2: #34494c; --muted: #587073; --s3: #7d8f91;
+    --good: #0e9258; --warn: #b77b06; --serious: #c95b2c; --crit: #d92d20;
+    --txt-good: #0b7a4a; --txt-bad: #c4320a;
+    --brand: #00797e; --note: #b45309;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif; font-size: 14px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.02em; }
+h2 { font-size: 30px; line-height: 1.15; }
+h3 { font-size: 15px; letter-spacing: -0.01em; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.tnum { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono), monospace; }
+.eyebrow { font-family: var(--font-mono), monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-2); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 6px; }
+
+/* Shell */
+.shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+.sidebar { position: sticky; top: 0; height: 100vh; border-right: 1px solid var(--line); background: var(--surface); display: flex; flex-direction: column; }
+.brand { background: var(--tosca); padding: 22px 22px 20px; color: #fff; }
+.brand .logo { font-weight: 700; font-size: 26px; letter-spacing: -0.03em; display: flex; align-items: center; gap: 10px; }
+.brand .logo i { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(var(--jingga) 0 25%, var(--merah) 0 50%, var(--biru) 0 75%, #fff 0); display: inline-block; }
+.brand .sub { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; opacity: .85; margin-top: 4px; }
+.nav { padding: 14px 10px; display: grid; gap: 2px; }
+.nav a { display: flex; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 10px; color: var(--ink-2); text-decoration: none; border-left: 3px solid transparent; }
+.nav a span { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); width: 18px; }
+.nav a:hover { background: rgba(var(--fg-rgb), 0.04); }
+.nav a[aria-current="page"] { background: var(--surface-3); color: var(--ink); border-left-color: var(--brand); }
+.nav .badge { margin-left: auto; font-family: var(--font-mono); font-size: 10.5px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--crit) 16%, transparent); color: var(--txt-bad); }
+.period { margin: auto 14px 16px; padding: 14px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+.period b { display: block; font-size: 16px; margin: 2px 0 6px; }
+
+.main { min-width: 0; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; gap: 12px; align-items: center; padding: 12px 36px; background: color-mix(in srgb, var(--page) 80%, transparent); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.crumbs { color: var(--muted); font-size: 13px; }
+.crumbs b { color: var(--ink); font-weight: 600; }
+.spacer { flex: 1; }
+.seg { display: inline-flex; padding: 3px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.seg button { border: 0; background: none; padding: 6px 12px; border-radius: 9px; cursor: pointer; color: var(--ink-2); font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--surface-3); color: var(--ink); }
+.btn { height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface-2); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+.btn.primary { background: linear-gradient(180deg, #0a9399, var(--tosca)); border-color: transparent; color: #fff; font-weight: 700; }
+.btn.icon { width: 36px; padding: 0; justify-content: center; }
+
+.content { max-width: 1400px; margin: 0 auto; padding: 32px 36px 80px; }
+section { margin-top: 56px; }
+section:first-child { margin-top: 8px; }
+.head { margin-bottom: 18px; display: grid; gap: 8px; }
+.head p { max-width: 760px; }
+
+.card { position: relative; padding: 22px; border-radius: var(--radius); background: var(--card-bg); border: 1px solid var(--line); box-shadow: 0 20px 40px -24px rgba(var(--shadow-rgb), calc(0.8 * var(--shadow-k))); }
+.row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Tiles */
+.tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+.tile { padding: 18px; border-radius: var(--radius); background: var(--card-bg); border: 1px solid var(--line); cursor: pointer; text-align: left; transition: transform .25s var(--ease), border-color .2s; }
+.tile:hover { transform: translateY(-3px); border-color: var(--line-2); }
+.tile[aria-pressed="true"] { border-color: var(--brand); }
+.tile .lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.tile .num { font-size: 34px; font-weight: 600; letter-spacing: -0.03em; margin: 6px 0 2px; }
+.tile .meta { font-size: 12.5px; color: var(--muted); }
+.tile.crit .num { color: var(--txt-bad); }
+
+/* Chips */
+.chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 9%, transparent); color: var(--ink); }
+.chip svg { width: 13px; height: 13px; color: var(--c); flex: none; }
+.chip.good { --c: var(--good); } .chip.warn { --c: var(--warn); } .chip.serious { --c: var(--serious); }
+.chip.crit { --c: var(--crit); } .chip.na { --c: var(--s3); } .chip.done { --c: var(--s1); }
+.chip.plain { --c: var(--s3); font-weight: 500; }
+
+/* Decision list */
+.decisions { display: grid; gap: 10px; }
+.dec { display: grid; grid-template-columns: 4px 1fr auto; gap: 14px; padding: 14px 16px 14px 0; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.dec .bar { background: var(--s3); }
+.dec.late .bar { background: var(--crit); }
+.dec h4 { margin: 2px 0 4px; font-size: 14px; font-weight: 600; }
+.dec .who { font-size: 12.5px; color: var(--muted); }
+.dec .due { text-align: right; font-size: 12.5px; white-space: nowrap; }
+.dec .due b { display: block; font-family: var(--font-mono); font-size: 13px; }
+.dec.late .due b { color: var(--txt-bad); }
+.dec .acts { display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end; }
+.dec .acts .btn { height: 30px; font-size: 12px; padding: 0 10px; }
+
+/* Checks */
+.checks { display: grid; gap: 8px; }
+.check { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); }
+.check .n { font-size: 22px; font-weight: 600; min-width: 34px; text-align: right; }
+.check .t { font-size: 13px; }
+.check .t small { display: block; color: var(--muted); font-size: 12px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; min-width: 980px; }
+.tbl th { position: sticky; top: 0; background: var(--surface); text-align: left; font-family: var(--font-mono); font-weight: 500; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 10px 8px; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+.tbl td { padding: 11px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl tbody tr { cursor: pointer; }
+.tbl tbody tr:hover { background: rgba(var(--fg-rgb), 0.025); }
+.tbl .num { text-align: right; font-family: var(--font-mono); font-size: 13px; }
+.tbl .kode { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.tbl .upd { font-size: 11.5px; color: var(--muted); }
+.tbl tfoot td { font-size: 12.5px; color: var(--muted); border-bottom: 0; padding-top: 14px; }
+.pg { width: 150px; }
+.pg .track { position: relative; height: 10px; border-radius: 999px; background: rgba(var(--fg-rgb), 0.07); }
+.pg .track b { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--s1); }
+.pg .track u { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--s2); border-radius: 2px; }
+.pg .lbls { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+.pg .lbls .a { color: var(--ink); }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 18px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+.flag { font-family: var(--font-mono); font-size: 10.5px; color: var(--txt-bad); }
+.empty { text-align: center; color: var(--muted); padding: 24px !important; }
+
+/* Gantt */
+.gantt { position: relative; min-width: 760px; }
+.g-head, .g-row { display: grid; grid-template-columns: 220px 1fr; align-items: center; }
+.g-head { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--line-2); }
+.g-months { display: grid; grid-template-columns: 31fr 30fr 31fr; }
+.g-months span { border-left: 1px solid var(--line); padding-left: 8px; }
+.g-row { min-height: 40px; border-bottom: 1px solid var(--line); }
+.g-row .nm { font-size: 13px; padding-right: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-row .nm span { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin-right: 6px; }
+.g-lane { position: relative; height: 40px; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: calc(100% / 13) 100%; }
+.g-plan { position: absolute; top: 12px; height: 16px; border-radius: 5px; border: 1.5px dashed var(--s2); }
+.g-act { position: absolute; top: 15px; height: 10px; border-radius: 3px; background: var(--s1); }
+.g-over { position: absolute; top: 12px; height: 16px; border-radius: 0 5px 5px 0; background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--merah) 55%, transparent) 0 4px, transparent 4px 8px); border: 1px solid var(--merah); border-left: 0; }
+.g-today { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--brand); box-shadow: 0 0 10px var(--brand); pointer-events: none; }
+.g-today em { position: absolute; top: -22px; left: -24px; font-style: normal; font-family: var(--font-mono); font-size: 10.5px; color: var(--brand); white-space: nowrap; }
+.g-body { position: relative; }
+.g-nodate { font-size: 12px; color: var(--muted); padding-left: 8px; }
+
+/* Rutin */
+.routine { display: grid; gap: 8px; }
+.routine div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 13px; align-items: center; }
+
+/* Annotations */
+.note { display: none; position: absolute; z-index: 5; width: 22px; height: 22px; border-radius: 50%; background: var(--note); color: #1a1205; font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; align-items: center; justify-content: center; box-shadow: 0 0 0 3px color-mix(in srgb, var(--note) 30%, transparent); }
+body.anno .note { display: inline-flex; }
+body.anno .anno-target { outline: 1.5px dashed color-mix(in srgb, var(--note) 70%, transparent); outline-offset: 4px; border-radius: var(--radius); }
+.notes-list { display: none; }
+body.anno .notes-list { display: block; }
+.notes-list ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.notes-list li::marker { font-family: var(--font-mono); color: var(--note); font-weight: 600; }
+.wire-banner { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 36px; background: color-mix(in srgb, var(--note) 14%, transparent); color: var(--ink-2); border-bottom: 1px solid color-mix(in srgb, var(--note) 30%, transparent); }
+
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+
+@media (max-width: 1280px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1100px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .grid-1-2, .grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  h2 { font-size: 24px; }
+  .content { padding: 20px 16px 60px; }
+  .topbar { padding: 10px 16px; }
+  .wire-banner { padding: 6px 16px; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .btn.icon { width: 44px; height: 44px; }
+  .btn .hide-sm { display: none; }
+  .dec { grid-template-columns: 4px 1fr; }
+  .dec .due { grid-column: 2; text-align: left; }
+  .dec .acts { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-good" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-serious" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/></symbol>
+  <symbol id="i-crit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-na" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2" fill="currentColor"/></symbol>
+</svg>
+
+<div class="shell">
+  <aside class="sidebar" aria-label="Navigasi utama">
+    <div class="brand">
+      <div class="logo"><i aria-hidden="true"></i>kinra</div>
+      <div class="sub">Project Hub</div>
+    </div>
+    <nav class="nav">
+      <a href="#" aria-current="page"><span>01</span>Dasbor portofolio</a>
+      <a href="#"><span>02</span>Daftar proyek</a>
+      <a href="#"><span>03</span>Update mingguan <em class="badge">3</em></a>
+      <a href="#"><span>04</span>Antrean review</a>
+      <a href="#"><span>05</span>Masalah &amp; aksi</a>
+      <a href="#"><span>06</span>Permintaan dukungan <em class="badge">6</em></a>
+      <a href="#"><span>07</span>Pekerjaan rutin</a>
+      <a href="#"><span>08</span>Ekspor laporan</a>
+      <a href="#"><span>09</span>Pengaturan</a>
+    </nav>
+    <div class="period">
+      <div class="eyebrow">Periode laporan</div>
+      <b>M5 Oktober 2026</b>
+      <div class="small muted">26–30 Okt · batas input Kamis 29 Okt, 17.00 WIB</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="wire-banner">Wireframe · data ilustrasi dari Weekly Update Okt 2026, belum divalidasi PIC</div>
+    <header class="topbar">
+      <div class="crumbs">Bagian MR &amp; TI / <b>Dasbor portofolio</b></div>
+      <div class="spacer"></div>
+      <div class="seg" role="group" aria-label="Filter unit">
+        <button aria-pressed="true" data-unit="semua">Semua</button>
+        <button aria-pressed="false" data-unit="A">Manajemen Risiko</button>
+        <button aria-pressed="false" data-unit="B">Teknologi Informasi</button>
+      </div>
+      <button class="btn" id="anno-toggle" aria-pressed="false"><span aria-hidden="true">✎</span><span class="hide-sm">Anotasi</span></button>
+      <button class="btn icon" id="theme-toggle" aria-label="Ganti tema terang/gelap">◐</button>
+      <button class="btn primary"><span aria-hidden="true">⤓</span><span class="hide-sm">Ekspor PPT</span></button>
+    </header>
+
+    <main class="content">
+
+      <!-- 01 Ringkasan -->
+      <section id="ringkasan">
+        <div class="head" style="position:relative">
+          <span class="note" style="left:-30px;top:30px">1</span>
+          <div class="eyebrow">01 · Ringkasan portofolio</div>
+          <h2 id="headline">7 dari 11 proyek aktif berstatus Kritis</h2>
+          <p class="muted">Status dihitung sistem dari baseline dan progres aktivitas per Jumat 30 Okt 2026, bukan dari isian PIC. Pada laporan slide Oktober, semua proyek ini ditandai hijau.</p>
+        </div>
+        <div class="tiles anno-target" id="tiles" style="position:relative">
+          <span class="note" style="right:-10px;top:-10px">2</span>
+        </div>
+      </section>
+
+      <!-- 02 Perlu keputusan -->
+      <section id="keputusan">
+        <div class="head">
+          <div class="eyebrow">02 · Perlu keputusan</div>
+          <h2>6 permintaan dukungan menunggu, 2 lewat tenggat</h2>
+          <p class="muted">Pengganti kolom "Dukungan yang dibutuhkan". Setiap permintaan punya penerima, tenggat, dan status, lalu ditanggapi langsung dari sini.</p>
+        </div>
+        <div class="grid-1-2">
+          <div class="card anno-target" style="position:relative">
+            <span class="note" style="right:-10px;top:-10px">4</span>
+            <div class="row"><div><h3>Pemeriksaan otomatis minggu ini</h3><p class="muted small">Hal yang dulu lolos di laporan slide</p></div></div>
+            <div class="checks">
+              <div class="check"><span class="n tnum">3</span><span class="t">Update belum diajukan<small>A.1.1 ERIN, A.2.7 K3, B1.2 E-Office</small></span></div>
+              <div class="check"><span class="n tnum">2</span><span class="t">Re-baseline menunggu keputusan<small>B1.1 (19 Okt → 6 Nov), B3.1 (20 Okt → 13 Nov)</small></span></div>
+              <div class="check"><span class="n tnum">4</span><span class="t">Aksi korektif lewat target<small>Tanpa tindak lanjut lebih dari 3 hari</small></span></div>
+              <div class="check"><span class="n tnum">1</span><span class="t">Proyek tanpa tanggal dan aktivitas<small>A.2.7 Peningkatan Kualitas K3 (masih Draf)</small></span></div>
+              <div class="check"><span class="n tnum">2</span><span class="t">Pekerjaan rutin terlambat<small>Laporan MR Agustus &amp; September ke Holding</small></span></div>
+            </div>
+          </div>
+          <div class="card anno-target" style="position:relative">
+            <span class="note" style="right:-10px;top:-10px">3</span>
+            <div class="row">
+              <div><h3>Perlu keputusan Anda</h3><p class="muted small">Urut dari tenggat terdekat</p></div>
+              <span class="chip crit"><svg><use href="#i-crit"/></svg>2 lewat tenggat</span>
+            </div>
+            <div class="decisions" id="decisions"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 Portofolio -->
+      <section id="portofolio">
+        <div class="head">
+          <div class="eyebrow">03 · Portofolio proyek aktif</div>
+          <h2 id="tbl-title">Progres aktual tertinggal dari rencana di 10 proyek</h2>
+          <p class="muted">Bar biru = % aktual, garis jingga = % rencana pada tanggal laporan. Klik baris untuk membuka detail proyek, Gantt, dan PICA.</p>
+        </div>
+        <div class="card anno-target" style="position:relative">
+          <span class="note" style="right:-10px;top:-10px">5</span>
+          <div class="row">
+            <div class="legend">
+              <span><i style="background:var(--s1)"></i>% aktual</span>
+              <span><i style="background:var(--s2);width:3px"></i>% rencana (baseline)</span>
+            </div>
+            <div class="seg" role="group" aria-label="Filter status" id="status-filter">
+              <button aria-pressed="true" data-status="semua">Semua</button>
+              <button aria-pressed="false" data-status="kritis">Kritis</button>
+              <button aria-pressed="false" data-status="perhatian">Terlambat &amp; Waspada</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Kode</th><th>Proyek · PIC</th><th>Tenggat baseline</th><th>Progres</th>
+                  <th class="num">SPI</th><th>Status</th><th>Update M5</th><th>PICA</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+              <tfoot><tr><td colspan="8" id="tfoot"></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 Jadwal -->
+      <section id="jadwal">
+        <div class="head">
+          <div class="eyebrow">04 · Jadwal</div>
+          <h2>3 proyek sudah melewati tenggat baseline</h2>
+          <p class="muted">Kotak putus-putus = rentang baseline. Bar biru = progres aktual. Arsir merah = waktu yang terlewat sejak tenggat.</p>
+        </div>
+        <div class="card anno-target" style="position:relative">
+          <span class="note" style="right:-10px;top:-10px">6</span>
+          <div class="table-wrap">
+            <div class="gantt">
+              <div class="g-head"><div>Proyek</div><div class="g-months"><span>Okt</span><span>Nov</span><span>Des</span></div></div>
+              <div class="g-body" id="gantt"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 Rutin & selesai -->
+      <section id="lainnya">
+        <div class="head">
+          <div class="eyebrow">05 · Pekerjaan rutin &amp; arsip</div>
+          <h2>11 proyek selesai tahun ini, dipisah dari portofolio aktif</h2>
+        </div>
+        <div class="grid-2">
+          <div class="card anno-target" style="position:relative">
+            <span class="note" style="right:-10px;top:-10px">7</span>
+            <div class="row"><div><h3>Pekerjaan rutin</h3><p class="muted small">Bukan proyek; dipantau sebagai kepatuhan tenggat</p></div></div>
+            <div class="routine">
+              <div><span>Laporan MR Agustus → Holding</span><span class="chip crit"><svg><use href="#i-crit"/></svg>Belum terkirim</span></div>
+              <div><span>Laporan MR September → Holding</span><span class="chip crit"><svg><use href="#i-crit"/></svg>Belum terkirim</span></div>
+              <div><span>LM Triwulanan MR · TW III</span><span class="chip na"><svg><use href="#i-na"/></svg>Jadwal belum diisi</span></div>
+              <div><span>Laporan MR Oktober → Holding</span><span class="chip plain"><svg><use href="#i-na"/></svg>Belum jatuh tempo</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row"><div><h3>Selesai 2026</h3><p class="muted small">Arsip; tidak masuk laporan mingguan aktif</p></div></div>
+            <div class="routine" id="done"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="notes-list" id="catatan">
+        <div class="head"><div class="eyebrow">Catatan wireframe</div><h2>Perilaku komponen</h2></div>
+        <div class="card">
+          <ol>
+            <li><b>Judul berupa kesimpulan berangka</b>, dibuat otomatis dari data (panduan UI §5). Kalimat berubah sesuai kondisi, mis. "Semua proyek sesuai rencana".</li>
+            <li><b>KPI tile dapat diklik</b> sebagai filter tabel portofolio. Status selalu ikon + teks + warna (PRD §8.2). Kepatuhan update dari view <code>v_kepatuhan_update</code>.</li>
+            <li><b>Perlu keputusan Anda</b> hanya menampilkan permintaan yang ditujukan ke pengguna yang login (direksi/kabag). Tombol Tanggapi membuka panel tanggapan; status Dipenuhi/Ditolak wajib disertai teks (FR-50..52, view <code>v_dukungan_terbuka</code>).</li>
+            <li><b>Pemeriksaan otomatis</b> adalah pengganti review manual atas kualitas laporan: update belum diajukan, re-baseline tertunda, aksi lewat target, proyek tanpa data, rutin terlambat. Setiap baris dapat diklik ke daftarnya.</li>
+            <li><b>Tabel portofolio</b> dari view <code>v_proyek_kesehatan</code>. % rencana dihitung dari baseline aktif, bukan rencana yang sedang diedit. Penanda ↓ = status diperburuk manual oleh PIC (override); status tidak pernah bisa diperbaiki manual.</li>
+            <li><b>Gantt ringkas</b> menampilkan baseline vs aktual dengan garis "hari ini". Detail per aktivitas (Target/Real per minggu seperti slide lama) ada di halaman detail proyek.</li>
+            <li><b>Pekerjaan rutin</b> (LM Triwulanan, laporan bulanan ke Holding) dipisah dari proyek supaya tidak mencemari % progres portofolio (FR-15).</li>
+          </ol>
+        </div>
+      </section>
+
+      <footer>
+        Sumber: Weekly Update Bagian Manajemen Risiko dan TI, Oktober 2026 (diolah). Angka rencana diturunkan dari Gantt pada slide charter dan bersifat ilustrasi. Pada aplikasi, semua angka berasal dari tabel <span class="mono">projects</span>, <span class="mono">activities</span>, <span class="mono">baselines</span>, dan <span class="mono">project_updates</span>.
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script>
+const STATUS = {
+  sesuai:    { cls: 'good',    icon: 'i-good',    label: 'Sesuai rencana' },
+  waspada:   { cls: 'warn',    icon: 'i-warn',    label: 'Waspada' },
+  terlambat: { cls: 'serious', icon: 'i-serious', label: 'Terlambat' },
+  kritis:    { cls: 'crit',    icon: 'i-crit',    label: 'Kritis' },
+  data:      { cls: 'na',      icon: 'i-na',      label: 'Data belum lengkap' },
+};
+
+// Ilustrasi: diturunkan dari laporan Okt 2026. Tanggal = baseline.
+const PROYEK = [
+  { kode: 'A.1.1', nama: 'Implementasi Aplikasi ERIN', unit: 'A', sub: 'Sub Bidang MR', mulai: '2026-10-01', selesai: '2026-10-30', r: 80, a: 0, status: 'kritis', upd: 'belum', pica: [0, 0], cat: 'Belum ada aktivitas terisi' },
+  { kode: 'A.1.2', nama: 'Penerapan BCMS', unit: 'A', sub: 'Sub Bidang MR', mulai: '2026-10-12', selesai: '2026-12-11', r: 33, a: 10, status: 'kritis', upd: 'disetujui', pica: [1, 1] },
+  { kode: 'A.1.5', nama: 'Penyusunan RKAP MR 2027', unit: 'A', sub: 'Sub Bidang MR', mulai: '2026-10-12', selesai: '2026-12-18', r: 85, a: 70, status: 'terlambat', upd: 'diajukan', pica: [1, 0] },
+  { kode: 'A.1.6', nama: 'Tindak Lanjut Saran Perbaikan RMI', unit: 'A', sub: 'Sub Bidang MR', mulai: '2026-10-19', selesai: '2026-12-25', r: 30, a: 25, status: 'terlambat', upd: 'direview', pica: [1, 0] },
+  { kode: 'A.2.6', nama: 'Sertifikasi ISO 50001', unit: 'A', sub: 'Sub Bidang Sistem Manajemen', mulai: '2026-10-05', selesai: '2026-12-17', r: 35, a: 14, status: 'kritis', upd: 'diajukan', pica: [2, 1] },
+  { kode: 'A.2.7', nama: 'Peningkatan Kualitas K3', unit: 'A', sub: 'Sub Bidang Sistem Manajemen', mulai: null, selesai: null, r: null, a: null, status: 'data', upd: 'belum', pica: [0, 0], cat: 'Draf: charter belum lengkap' },
+  { kode: 'B1.1', nama: 'Pendataan Kebutuhan Digitalisasi', unit: 'B', sub: 'IT Strategy & Governance', mulai: '2026-10-05', selesai: '2026-10-19', r: 100, a: 60, status: 'kritis', upd: 'disetujui', pica: [1, 1], cat: 'Re-baseline diajukan' },
+  { kode: 'B1.2', nama: 'Sosialisasi Aplikasi e-Office', unit: 'B', sub: 'IT Strategy & Governance', mulai: '2026-10-19', selesai: '2026-10-28', r: 70, a: 25, status: 'kritis', upd: 'belum', pica: [1, 0] },
+  { kode: 'B2.3', nama: 'Ticketing Aduan Internal IT', unit: 'B', sub: 'IT Development', mulai: '2026-10-01', selesai: '2026-10-14', r: 100, a: 90, status: 'kritis', upd: 'disetujui', pica: [1, 0], cat: 'Fitur SLA & ekspor: usulkan proyek lanjutan' },
+  { kode: 'B2.5', nama: 'Web Dashboard Bagian Mekanikal', unit: 'B', sub: 'IT Development', mulai: '2026-10-12', selesai: '2026-10-31', r: 95, a: 90, status: 'waspada', upd: 'diajukan', pica: [0, 0], override: false },
+  { kode: 'B3.1', nama: 'Jaringan Starlink Gedung Graha', unit: 'B', sub: 'Infrastructure & Operation', mulai: '2026-10-05', selesai: '2026-10-20', r: 100, a: 25, status: 'kritis', upd: 'disetujui', pica: [1, 1], cat: 'Menunggu pengadaan; re-baseline diajukan', override: true },
+];
+
+const SELESAI = [
+  ['A.1.3', 'Penilaian RMI oleh BPKP', '25 Sep'], ['A.2.1', 'Sertifikasi ISO 14001', '27 Feb'],
+  ['A.2.2', 'Reviu SOP Seluruh Bagian', 'Jun'], ['A.2.3', 'Audit Surveillance ISO 9001', '8 Sep'],
+  ['A.2.4', 'Audit Resertifikasi ISO 45001', '8 Sep'], ['A.2.5', 'Audit Surveillance ISO 37001', '29 Sep'],
+  ['B2.1', 'Aplikasi IAM', '14 Okt'], ['B2.2', 'Homepage Portal & SSO', '14 Okt'],
+  ['B2.4', 'AI Vision pembaca KWH', '20 Okt'], ['B2.6', 'Infrastruktur Digital & Subscription AI', '26 Okt'],
+  ['B3.2', 'Starlink Ruang Rapat Pusat Inovasi', '14 Okt'],
+];
+
+const DUKUNGAN = [
+  { teks: 'Setujui pengiriman Laporan MR Agustus dan September ke Holding', ref: 'Rutin · Sub Bidang MR', ke: 'Kabag MR & TI', tenggat: '15 Okt', telat: true },
+  { teks: 'Percepat proses pengadaan router Starlink lantai 1–2 Gedung Graha', ref: 'B3.1', ke: 'Kabag SDM Umum & Pengadaan', tenggat: '23 Okt', telat: true },
+  { teks: 'Tetapkan ulang target dan tim pelaksana ERIN; belum ada aktivitas berjalan', ref: 'A.1.1', ke: 'Kabag MR & TI', tenggat: '28 Okt', telat: false },
+  { teks: 'Instruksikan seluruh Bagian menunjuk PIC SMEn dan menyerahkan data energi 1 tahun', ref: 'A.2.6', ke: 'Direktur', tenggat: '6 Nov', telat: false },
+  { teks: 'Sediakan infrastruktur server produksi untuk AI Vision KWH', ref: 'B2.4 → B2.6', ke: 'Kabag MR & TI', tenggat: '13 Nov', telat: false },
+  { teks: 'Masukkan penyusunan Rencana Strategis TI (RSTI) ke RKAP 2027', ref: 'Issue TI no. 1', ke: 'Direktur', tenggat: '20 Nov', telat: false },
+];
+
+const UPD = {
+  belum:     '<span class="chip crit"><svg><use href="#i-crit"/></svg>Belum diajukan</span>',
+  diajukan:  '<span class="chip plain">Diajukan</span>',
+  direview:  '<span class="chip plain">Direview</span>',
+  disetujui: '<span class="chip done"><svg><use href="#i-good"/></svg>Disetujui</span>',
+};
+
+const fmtTgl = (iso) => {
+  if (!iso) return '–';
+  const b = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const d = new Date(iso + 'T00:00:00');
+  return `${d.getDate()} ${b[d.getMonth()]}`;
+};
+const angka = (n, dig = 2) => n == null ? '–' : n.toLocaleString('id-ID', { minimumFractionDigits: dig, maximumFractionDigits: dig });
+const chip = (s) => `<span class="chip ${STATUS[s].cls}"><svg aria-hidden="true"><use href="#${STATUS[s].icon}"/></svg>${STATUS[s].label}</span>`;
+
+const HARI_INI = new Date('2026-10-26T00:00:00');
+let filterUnit = 'semua';
+let filterStatus = 'semua';
+
+function terpilih() {
+  return PROYEK.filter(p => filterUnit === 'semua' || p.unit === filterUnit);
+}
+
+function renderTiles() {
+  const list = terpilih();
+  const n = (s) => list.filter(p => p.status === s).length;
+  const tepat = list.filter(p => p.upd !== 'belum').length;
+  const tiles = [
+    { lbl: 'Proyek aktif', num: list.length, meta: `${SELESAI.filter(s => filterUnit === 'semua' || s[0][0] === filterUnit).length} selesai tahun ini`, f: 'semua' },
+    { lbl: 'Kritis', num: n('kritis'), meta: 'SPI < 0,70 atau lewat tenggat', f: 'kritis', cls: 'crit', icon: 'i-crit' },
+    { lbl: 'Terlambat · Waspada', num: `${n('terlambat')} · ${n('waspada')}`, meta: 'SPI 0,70–0,95', f: 'perhatian', icon: 'i-serious' },
+    { lbl: 'Sesuai rencana', num: n('sesuai'), meta: 'SPI ≥ 0,95', icon: 'i-good' },
+    { lbl: 'Update tepat waktu', num: `${Math.round(100 * tepat / list.length)}%`, meta: `${tepat} dari ${list.length} proyek · target ≥ 95%` },
+    { lbl: 'Dukungan menunggu', num: DUKUNGAN.length, meta: `${DUKUNGAN.filter(d => d.telat).length} lewat tenggat` },
+  ];
+  const el = document.getElementById('tiles');
+  const note = el.querySelector('.note');
+  el.innerHTML = tiles.map(t => `
+    <button class="tile ${t.cls || ''}" ${t.f ? `data-f="${t.f}"` : 'disabled'} aria-pressed="${t.f && t.f === filterStatus && t.f !== 'semua'}">
+      <div class="lbl">${t.icon ? `<svg width="13" height="13" aria-hidden="true"><use href="#${t.icon}"/></svg>` : ''}${t.lbl}</div>
+      <div class="num tnum">${t.num}</div>
+      <div class="meta">${t.meta}</div>
+    </button>`).join('');
+  el.prepend(note);
+  el.querySelectorAll('[data-f]').forEach(b => b.addEventListener('click', () => setStatus(b.dataset.f)));
+
+  const kritis = n('kritis');
+  document.getElementById('headline').textContent = kritis
+    ? `${kritis} dari ${list.length} proyek aktif berstatus Kritis`
+    : `Tidak ada proyek Kritis dari ${list.length} proyek aktif`;
+  const tertinggal = list.filter(p => ['kritis', 'terlambat', 'waspada'].includes(p.status)).length;
+  document.getElementById('tbl-title').textContent = `Progres aktual tertinggal dari rencana di ${tertinggal} proyek`;
+}
+
+function renderRows() {
+  const list = terpilih().filter(p =>
+    filterStatus === 'semua' ||
+    (filterStatus === 'kritis' && p.status === 'kritis') ||
+    (filterStatus === 'perhatian' && ['terlambat', 'waspada'].includes(p.status)));
+  const rows = list.map(p => {
+    const spi = p.r ? p.a / p.r : null;
+    const lewat = p.selesai && new Date(p.selesai + 'T00:00:00') < HARI_INI;
+    return `<tr tabindex="0">
+      <td class="kode">${p.kode}</td>
+      <td><div>${p.nama}</div><div class="upd">Nama PIC · ${p.sub}${p.cat ? ` · <span class="flag">${p.cat}</span>` : ''}</div></td>
+      <td class="mono small">${fmtTgl(p.selesai)}${lewat ? ' <span class="flag">lewat</span>' : ''}</td>
+      <td>${p.r == null ? '<span class="muted small">–</span>' : `
+        <div class="pg" role="img" aria-label="Aktual ${p.a}%, rencana ${p.r}%">
+          <div class="track"><b style="width:${p.a}%"></b><u style="left:calc(${p.r}% - 1px)"></u></div>
+          <div class="lbls"><span class="a">${p.a}%</span><span>rencana ${p.r}%</span></div>
+        </div>`}</td>
+      <td class="num">${angka(spi)}</td>
+      <td>${chip(p.status)}${p.override ? ' <span class="flag" title="Diperburuk manual oleh PIC">↓</span>' : ''}</td>
+      <td>${UPD[p.upd]}</td>
+      <td class="small">${p.pica[0]} masalah${p.pica[1] ? ` · <span class="flag">${p.pica[1]} aksi telat</span>` : ''}</td>
+    </tr>`;
+  });
+  document.getElementById('rows').innerHTML = rows.length ? rows.join('') :
+    '<tr><td colspan="8" class="empty">Tidak ada proyek yang cocok dengan filter ini.</td></tr>';
+  const rata = list.filter(p => p.r).reduce((s, p, _, arr) => s + p.a / arr.length, 0);
+  document.getElementById('tfoot').textContent =
+    `${list.length} proyek · rata-rata progres aktual ${angka(rata, 1)}% · sumber: v_proyek_kesehatan, dihitung 30 Okt 2026`;
+}
+
+function renderGantt() {
+  const awal = new Date('2026-10-01T00:00:00'), akhir = new Date('2027-01-01T00:00:00');
+  const span = (akhir - awal);
+  const pos = (iso) => Math.max(0, Math.min(100, (new Date(iso + 'T00:00:00') - awal) / span * 100));
+  const kini = (HARI_INI - awal) / span * 100;
+  const list = terpilih();
+  document.getElementById('gantt').innerHTML = list.map((p, i) => {
+    if (!p.mulai) return `<div class="g-row"><div class="nm"><span>${p.kode}</span>${p.nama}</div><div class="g-lane"><span class="g-nodate">Belum ada tanggal</span></div></div>`;
+    const x = pos(p.mulai), w = pos(p.selesai) - x + (100 / 92);
+    const lewat = new Date(p.selesai + 'T00:00:00') < HARI_INI;
+    const over = lewat ? `<div class="g-over" style="left:${x + w}%;width:${kini - x - w}%"></div>` : '';
+    return `<div class="g-row"><div class="nm" title="${p.nama}"><span>${p.kode}</span>${p.nama}</div>
+      <div class="g-lane" role="img" aria-label="${p.kode} baseline ${fmtTgl(p.mulai)}–${fmtTgl(p.selesai)}, progres ${p.a}%">
+        <div class="g-plan" style="left:${x}%;width:${w}%"></div>
+        <div class="g-act" style="left:${x}%;width:${w * p.a / 100}%"></div>${over}
+        ${i === 0 ? `<div class="g-today" style="left:${kini}%;top:-8px;bottom:${-40 * (list.length - 1)}px"><em>Hari ini</em></div>` : ''}
+      </div></div>`;
+  }).join('');
+}
+
+function renderDecisions() {
+  document.getElementById('decisions').innerHTML = DUKUNGAN.map(d => `
+    <div class="dec ${d.telat ? 'late' : ''}">
+      <div class="bar"></div>
+      <div>
+        <div class="eyebrow" style="font-size:10px">${d.ref}</div>
+        <h4>${d.teks}</h4>
+        <div class="who">Kepada ${d.ke}</div>
+      </div>
+      <div class="due">${d.telat ? 'Lewat tenggat' : 'Tenggat'}<b>${d.tenggat}</b>
+        <div class="acts"><button class="btn">Tanggapi</button></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderDone() {
+  const list = SELESAI.filter(s => filterUnit === 'semua' || s[0][0] === filterUnit);
+  document.getElementById('done').innerHTML = list.map(s =>
+    `<div><span><span class="mono small muted">${s[0]}</span>&nbsp; ${s[1]}</span><span class="mono small muted">${s[2]}</span></div>`).join('');
+}
+
+function setStatus(f) {
+  filterStatus = f;
+  document.querySelectorAll('#status-filter button').forEach(b => b.setAttribute('aria-pressed', b.dataset.status === f));
+  renderTiles(); renderRows();
+}
+
+function render() { renderTiles(); renderRows(); renderGantt(); renderDone(); }
+
+document.querySelectorAll('[data-unit]').forEach(b => b.addEventListener('click', () => {
+  filterUnit = b.dataset.unit;
+  document.querySelectorAll('[data-unit]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  render();
+}));
+document.querySelectorAll('#status-filter button').forEach(b => b.addEventListener('click', () => setStatus(b.dataset.status)));
+document.getElementById('anno-toggle').addEventListener('click', (e) => {
+  const on = document.body.classList.toggle('anno');
+  e.currentTarget.setAttribute('aria-pressed', on);
+});
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const root = document.documentElement;
+  const gelap = root.dataset.theme ? root.dataset.theme === 'dark' : !matchMedia('(prefers-color-scheme: light)').matches;
+  root.dataset.theme = gelap ? 'light' : 'dark';
+});
+
+renderDecisions();
+render();
+</script>
+</body>
+</html>
