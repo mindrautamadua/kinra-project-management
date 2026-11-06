@@ -47,3 +47,9 @@ update projects set manfaat =
   || E'Konten dan artikel dapat diperbarui sendiri oleh Pemasaran lewat CMS tanpa bergantung vendor\n'
   || 'Website dikelola Tim IT KINRA dengan teknologi yang sama dengan aplikasi KINRA lain (Next.js dan Supabase)'
 where kode = 'B.2.10' and nullif(trim(manfaat), '') is null;
+
+-- Pembaruan 6 Nov 2026 (diterapkan lewat REST, dicatat sebagai riwayat):
+-- * Tujuan memuat Go Live website baru 31 Desember 2026.
+-- * Pekerjaan dihitung mulai 5 November 2026: proyek 5 Nov 2026 – 4 Nov 2027 (durasi 12 bulan tetap).
+--   Aktivitas konsultan (1–4, 12–19) digeser +35 hari; aktivitas 5 mulai 5 Nov; aktivitas IT 6–11 dan Go Live tetap.
+--   Label batch artikel menjadi (Desember) dan (Januari–Maret); ruang lingkup artikel menjadi Des 2026–Mar 2027.
