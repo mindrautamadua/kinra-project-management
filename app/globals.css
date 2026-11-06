@@ -1178,11 +1178,11 @@ textarea:focus, input:focus, select:focus { outline: none; border-color: var(--b
 .lk-tabel .lk-bagian td { padding-top: 8px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--line-2); background: var(--surface-2); }
 .lk-catatan { color: var(--serious); font-style: italic; }
 .isi-sub { padding-left: 14px; }
-/* Lampiran foto kegiatan */
+/* Lampiran foto kegiatan: foto ditampilkan utuh (contain), sisa bidang diisi latar, agar screenshot atau foto lebar tidak terpotong */
 .lampiran-pembuka .ch-head h2 { font-size: 30px; letter-spacing: -0.02em; }
 .foto-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .foto-grid figure, .galeri-foto figure { margin: 0; display: grid; gap: 4px; align-content: start; min-width: 0; }
-.foto-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: var(--surface-2); display: block; }
+.foto-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; border-radius: 8px; background: var(--surface-2); display: block; }
 .foto-grid figcaption, .galeri-foto figcaption { display: grid; gap: 1px; font-size: 12px; line-height: 1.3; }
 .foto-hilang { aspect-ratio: 4 / 3; display: grid; place-items: center; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 12px; }
 .galeri-foto { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 8px; }
