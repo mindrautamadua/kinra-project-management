@@ -12,31 +12,13 @@ const kembali = (projectId: string, p: { ok?: string; galat?: string }): never =
 
 const teks = (form: FormData, k: string) => String(form.get(k) ?? '').trim() || null;
 
-// Simpan progres aktivitas dan isian update. Mengembalikan pesan galat dari database bila ada.
+// Simpan isian update dan progres aktivitas. Mengembalikan pesan galat bila ada.
+// Teks update disimpan lebih dulu, sehingga isian "yang telah dilakukan" dan "rencana minggu depan" tidak hilang
+// ketika progres aktivitas ditolak. Progres aktivitas divalidasi seluruhnya sebelum ada yang ditulis.
 async function simpanIsi(form: FormData): Promise<{ projectId: string; updateId: string; galat?: string }> {
   const sb = await supabase();
   const projectId = String(form.get('project_id'));
   const periodId = String(form.get('period_id'));
-
-  const { data: aktivitas, error: eAkt } = await sb.from('activities').select('id,nama,progres,status,aktual_selesai').eq('project_id', projectId);
-  if (eAkt) return { projectId, updateId: '', galat: eAkt.message };
-  for (const a of aktivitas ?? []) {
-    const nilai = form.get(`prog_${a.id}`);
-    if (nilai == null || a.status === 'dibatalkan') continue;
-    const progres = Number(nilai);
-    const tglSelesai = teks(form, `selesai_${a.id}`);
-    let ubah: Record<string, unknown> | null = null;
-    if (progres === 100) {
-      if (!tglSelesai) return { projectId, updateId: '', galat: `Isi tanggal aktual selesai untuk aktivitas "${a.nama}".` };
-      if (a.status !== 'selesai' || a.aktual_selesai !== tglSelesai) ubah = { status: 'selesai', progres: 100, aktual_selesai: tglSelesai };
-    } else if (a.status === 'selesai' || a.progres !== progres) {
-      ubah = { progres, status: progres === 0 && a.status === 'belum_mulai' ? 'belum_mulai' : 'berjalan', aktual_selesai: null };
-    }
-    if (ubah) {
-      const { error } = await sb.from('activities').update(ubah).eq('id', a.id);
-      if (error) return { projectId, updateId: '', galat: error.message };
-    }
-  }
 
   const isi = {
     sudah_dilakukan: teks(form, 'sudah_dilakukan'),
@@ -44,13 +26,38 @@ async function simpanIsi(form: FormData): Promise<{ projectId: string; updateId:
     status_override: teks(form, 'status_override'),
     alasan_override: teks(form, 'alasan_override'),
   };
+  let updateId = '';
   const { data: ada } = await sb.from('project_updates').select('id').eq('project_id', projectId).eq('period_id', periodId).maybeSingle();
   if (ada) {
+    updateId = ada.id;
     const { error } = await sb.from('project_updates').update(isi).eq('id', ada.id);
-    return { projectId, updateId: ada.id, galat: error?.message };
+    if (error) return { projectId, updateId, galat: error.message };
+  } else {
+    const { data, error } = await sb.from('project_updates').insert({ project_id: projectId, period_id: periodId, ...isi }).select('id').single();
+    if (error) return { projectId, updateId, galat: error.message };
+    updateId = data.id;
   }
-  const { data, error } = await sb.from('project_updates').insert({ project_id: projectId, period_id: periodId, ...isi }).select('id').single();
-  return { projectId, updateId: data?.id ?? '', galat: error?.message };
+
+  const { data: aktivitas, error: eAkt } = await sb.from('activities').select('id,nama,progres,status,aktual_selesai').eq('project_id', projectId);
+  if (eAkt) return { projectId, updateId, galat: eAkt.message };
+  const perubahan: { id: string; ubah: Record<string, unknown> }[] = [];
+  for (const a of aktivitas ?? []) {
+    const nilai = form.get(`prog_${a.id}`);
+    if (nilai == null || a.status === 'dibatalkan') continue;
+    const progres = Number(nilai);
+    const tglSelesai = teks(form, `selesai_${a.id}`);
+    if (progres === 100) {
+      if (!tglSelesai) return { projectId, updateId, galat: `Isian update tersimpan, tetapi progres aktivitas belum: isi tanggal aktual selesai untuk aktivitas "${a.nama}".` };
+      if (a.status !== 'selesai' || a.aktual_selesai !== tglSelesai) perubahan.push({ id: a.id, ubah: { status: 'selesai', progres: 100, aktual_selesai: tglSelesai } });
+    } else if (a.status === 'selesai' || a.progres !== progres) {
+      perubahan.push({ id: a.id, ubah: { progres, status: progres === 0 && a.status === 'belum_mulai' ? 'belum_mulai' : 'berjalan', aktual_selesai: null } });
+    }
+  }
+  for (const { id, ubah } of perubahan) {
+    const { error } = await sb.from('activities').update(ubah).eq('id', id);
+    if (error) return { projectId, updateId, galat: error.message };
+  }
+  return { projectId, updateId };
 }
 
 export async function simpanDraf(form: FormData) {

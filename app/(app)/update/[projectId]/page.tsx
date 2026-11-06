@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CircleCheck, Send, TriangleAlert } from 'lucide-react';
 import { ChipKesehatan, ChipUpdate, SectionHead } from '@/components/Chip';
 import FotoAktivitas from '@/components/client/FotoAktivitas';
+import WajibTanggalSelesai from '@/components/client/WajibTanggalSelesai';
 import { detailProyek, periodeBerjalan, profilAktif } from '@/lib/data';
 import { hariIni, hitungKesehatan, KESEHATAN, lebihBuruk, persen, pilihanOverride, STATUS_PROYEK, tgl } from '@/lib/format';
 import { muatFoto } from '@/lib/foto';
@@ -72,6 +73,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
       <form className="section">
         <input type="hidden" name="project_id" value={p.id} />
         <input type="hidden" name="period_id" value={periode.id} />
+        <WajibTanggalSelesai />
         <fieldset disabled={!dapatEdit} className="polos">
           <SectionHead no="1" eyebrow="Progres aktivitas" judul="Perbarui progres setiap aktivitas">
             <p className="muted">Progres hanya 0, 25, 50, 75, atau Selesai. Pilih Selesai dan isi tanggal aktual selesai bila aktivitas tuntas. Foto kegiatan langsung tersimpan saat diunggah dan tercetak di Lampiran laporan.</p>
