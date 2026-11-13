@@ -31,8 +31,8 @@ export default async function UbahCharter({ params, searchParams }: { params: Pr
   const bisa = !!boleh;
   const pemutus = saya.peran.some(r => r.role === 'admin' || r.role === 'kabag');
   // Database (fn_hapus_proyek) tetap memeriksa cakupan unit; ini hanya menentukan apakah kartu ditampilkan.
-  // Draf: pengelola unit, atau Operator pembuatnya (boleh bernilai true untuk Operator hanya pada Draf buatannya).
-  const bolehHapus = draf ? !!boleh && (bolehReview(saya) || saya.peran.some(r => r.role === 'operator')) : saya.peran.some(r => r.role === 'admin');
+  // Draf: pengelola unit, atau Operator/PIC pembuatnya (boleh bernilai true untuk Operator hanya pada Draf buatannya).
+  const bolehHapus = draf ? !!boleh && (bolehReview(saya) || saya.peran.some(r => r.role === 'operator' || r.role === 'pic')) : saya.peran.some(r => r.role === 'admin');
   const aktivitas = d.aktivitas.filter(a => a.status !== 'dibatalkan');
   const berubah = !draf && aktivitas.some(a => {
     const b = d.baseline[a.id];
@@ -146,7 +146,7 @@ export default async function UbahCharter({ params, searchParams }: { params: Pr
               <input type="hidden" name="id" value={id} />
               <input type="hidden" name="status" value="aktif" />
               <h3>Aktifkan dan kunci baseline v1</h3>
-              <p className="muted small">Syarat: tanggal mulai dan selesai proyek terisi, ada minimal satu aktivitas, dan semua aktivitas bertanggal. Hanya Kasubag, Kabag, atau Admin yang dapat mengaktifkan.</p>
+              <p className="muted small">Syarat: tanggal mulai dan selesai proyek terisi, ada minimal satu aktivitas, dan semua aktivitas bertanggal. Dapat diaktifkan PIC proyek, Kasubag, Kabag, atau Admin.</p>
               <button className="btn primary">Aktifkan proyek</button>
             </form>
           )}
