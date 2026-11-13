@@ -1,7 +1,9 @@
 -- Aktifkan akun yang sudah mendaftar di Supabase Auth dan beri peran.
 -- Jalankan di SQL editor Studio (sebagai postgres). Ganti nilai di blok "isi" lalu jalankan.
 --
--- Peran: admin | direksi | kabag | kasubag | pic | anggota | pembaca
+-- Peran: admin | direksi | kabag | kasubag | pic | operator | anggota | pembaca
+-- operator: mengisi update mingguan (progres aktivitas, capaian, rencana, PICA, foto) untuk semua proyek di unitnya;
+--           tidak dapat mengubah charter, rencana kerja, atau baseline. Wajib diisi kode unit.
 -- Kode unit: MRTI (Bagian MR & TI), A, A.1, A.2, B, B.1, B.2, B.3 — kosongkan (null) untuk admin/direksi.
 
 do $$

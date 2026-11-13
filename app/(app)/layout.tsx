@@ -1,4 +1,5 @@
 import { LogOut, UserRoundX } from 'lucide-react';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import IndikatorProses from '@/components/client/IndikatorProses';
 import NavLinks from '@/components/client/NavLinks';
@@ -24,6 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     );
   }
 
+  const admin = saya.peran.some(r => r.role === 'admin');
   const periode = await periodeBerjalan();
   const sb = await supabase();
   const [{ data: dapat }, { data: sudah }] = await Promise.all([
@@ -43,7 +45,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <img src="/brand/kinra-logo-tosca.png" alt="Kinra Sei Mangkei" width={168} height={72} />
           <div className="brand-sub">Project Hub</div>
         </div>
-        <NavLinks badgeUpdate={belum} />
+        <NavLinks badgeUpdate={belum} admin={admin} />
         <div className="side-card">
           <div className="side-label">Periode laporan</div>
           <b>{periode.label}</b>
@@ -59,12 +61,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="topbar-right">
             <TombolTema />
             <div className="akun">
-              <span className="akun-email" title={saya.email}>{saya.nama}</span>
+              <Link href="/akun" className="akun-email" title={`${saya.email} · ganti password`}>{saya.nama}</Link>
               <form action={keluar}><button className="btn-keluar" type="submit" aria-label="Keluar"><LogOut size={15} aria-hidden="true" /></button></form>
             </div>
           </div>
         </header>
-        <NavLinks badgeUpdate={belum} varian="mobile" />
+        <NavLinks badgeUpdate={belum} admin={admin} varian="mobile" />
         <main>{children}</main>
         <footer className="footer">
           Status proyek dihitung sistem dari baseline dan progres aktivitas (SPI = % aktual ÷ % rencana). Sesuai ≥ 0,95 · Waspada ≥ 0,85 · Terlambat ≥ 0,70 · Kritis &lt; 0,70 atau lewat tenggat baseline.

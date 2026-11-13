@@ -1,5 +1,5 @@
 export type Kesehatan = 'selesai' | 'belum_mulai' | 'sesuai' | 'data_belum_lengkap' | 'waspada' | 'terlambat' | 'kritis';
-export type Peran = 'admin' | 'direksi' | 'kabag' | 'kasubag' | 'pic' | 'anggota' | 'pembaca';
+export type Peran = 'admin' | 'direksi' | 'kabag' | 'kasubag' | 'pic' | 'operator' | 'anggota' | 'pembaca';
 
 export interface ProyekKesehatan {
   id: string; kode: string; nama: string; status: string;

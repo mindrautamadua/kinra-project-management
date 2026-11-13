@@ -19,7 +19,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
   const sp = await searchParams;
   const sb = await supabase();
   const [saya, periode, d, orang, { data: boleh }] = await Promise.all([
-    penggunaSaatIni(), periodeBerjalan(), detailProyek(projectId), profilAktif(), sb.rpc('fn_boleh_ubah_proyek', { p_project: projectId }),
+    penggunaSaatIni(), periodeBerjalan(), detailProyek(projectId), profilAktif(), sb.rpc('fn_boleh_update_proyek', { p_project: projectId }),
   ]);
   if (!d) notFound();
   const { proyek: p } = d;
@@ -59,7 +59,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
         </div>
         {galat && <div className="pesan galat" role="alert"><TriangleAlert size={16} aria-hidden="true" />{galat}</div>}
         {ok && <div className="pesan ok" role="status"><CircleCheck size={16} aria-hidden="true" />{ok}</div>}
-        {!boleh && <div className="pesan" role="status">Anda hanya dapat melihat update ini. Pengisian dilakukan PIC atau pengelola unit.</div>}
+        {!boleh && <div className="pesan" role="status">Anda hanya dapat melihat update ini. Pengisian dilakukan PIC, Operator, atau pengelola unit.</div>}
         {alasanKunci && <div className="pesan" role="status">{alasanKunci}</div>}
 
         <div className="tiles tiles-4">

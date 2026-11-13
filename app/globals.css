@@ -860,6 +860,12 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 36px 56px; }
 .btn-mini { margin-left: 8px; height: 26px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line-2); background: none; color: var(--ink-2); font: inherit; font-size: 12px; cursor: pointer; }
 .btn-mini:hover { border-color: var(--brand); color: var(--ink); }
 form.inline { display: inline; }
+.form-sempit { max-width: 420px; }
+a.akun-email { color: inherit; text-decoration: none; }
+a.akun-email:hover { text-decoration: underline; }
+.daftar-peran { list-style: none; margin: 0 0 6px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.daftar-peran li { display: inline-flex; align-items: center; }
+.daftar-peran .btn-mini { margin-left: 4px; }
 fieldset:disabled .btn, button:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Indikator proses tombol formulir (components/client/IndikatorProses.tsx) */
