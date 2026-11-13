@@ -3,6 +3,7 @@ import { CircleCheck, TriangleAlert } from 'lucide-react';
 import { Chip, SectionHead } from '@/components/Chip';
 import { daftarUnit, profilAktif } from '@/lib/data';
 import { hariIni, tgl, type KodeStatus } from '@/lib/format';
+import { bolehMenu } from '@/lib/menu';
 import { penggunaSaatIni } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 import { tambahAksi, tambahIsu, ubahIsu, ubahStatusIsu } from './actions';
@@ -105,7 +106,7 @@ export default async function HalamanIsu({ searchParams }: { searchParams: Cari 
                       <div key={a.id}>{a.deskripsi} <span className="muted">({nama.get(a.owner_id) ?? '–'}, {tgl(a.tanggal_target, false)}{a.status === 'selesai' ? ', selesai' : ''})</span>
                         {a.status !== 'selesai' && a.tanggal_target < hari && <span className="flag"> lewat</span>}</div>
                     ))}{i.actions.length === 0 && <span className="flag">Belum ada aksi</span>}</td>
-                    <td><Link className="btn-mini" href={`/update/${i.project_id}`}>Kelola</Link></td>
+                    <td>{bolehMenu(saya.peran.map(r => r.role), '/update') && <Link className="btn-mini" href={`/update/${i.project_id}`}>Kelola</Link>}</td>
                   </tr>
                 ))}
               </tbody>

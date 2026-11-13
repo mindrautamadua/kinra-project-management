@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { ChipKesehatan, ChipUpdate, SectionHead } from '@/components/Chip';
 import { daftarProyek, periodeBerjalan } from '@/lib/data';
+import { wajibMenu } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 
 export default async function DaftarUpdate() {
+  await wajibMenu('/update');
   const sb = await supabase();
   const [periode, proyek, { data: dapat }] = await Promise.all([
     periodeBerjalan(), daftarProyek(), sb.rpc('fn_proyek_dapat_diubah'),

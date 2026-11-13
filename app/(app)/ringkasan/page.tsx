@@ -5,14 +5,14 @@ import Ringkasan from '@/components/Ringkasan';
 import TombolCetak from '@/components/client/TombolCetak';
 import { tgl } from '@/lib/format';
 import { muatRingkasan } from '@/lib/ringkasan';
-import { penggunaSaatIni } from '@/lib/sesi';
+import { wajibMenu } from '@/lib/sesi';
 import { simpanCatatan } from './actions';
 
 type Cari = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function HalamanRingkasan({ searchParams }: { searchParams: Cari }) {
   const sp = await searchParams;
-  const [r, saya] = await Promise.all([muatRingkasan(), penggunaSaatIni()]);
+  const [r, saya] = await Promise.all([muatRingkasan(), wajibMenu('/ringkasan')]);
   const bolehCatat = saya.peran.some(x => x.role === 'kabag' || x.role === 'admin');
   const galat = typeof sp.galat === 'string' ? sp.galat : null;
   const ok = typeof sp.ok === 'string' ? sp.ok : null;

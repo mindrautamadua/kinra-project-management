@@ -7,7 +7,8 @@ import WajibTanggalSelesai from '@/components/client/WajibTanggalSelesai';
 import { detailProyek, periodeBerjalan, profilAktif } from '@/lib/data';
 import { hariIni, hitungKesehatan, KESEHATAN, lebihBuruk, persen, pilihanOverride, STATUS_PROYEK, tgl } from '@/lib/format';
 import { muatFoto } from '@/lib/foto';
-import { penggunaSaatIni } from '@/lib/sesi';
+import { bolehMenu } from '@/lib/menu';
+import { wajibMenu } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 import type { Kesehatan, Masalah, UpdateMingguan } from '@/lib/types';
 import { ajukan, simpanDraf, tambahAksiPica, tambahPica, ubahMasalah, ubahPica } from './actions';
@@ -19,7 +20,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
   const sp = await searchParams;
   const sb = await supabase();
   const [saya, periode, d, orang, { data: boleh }] = await Promise.all([
-    penggunaSaatIni(), periodeBerjalan(), detailProyek(projectId), profilAktif(), sb.rpc('fn_boleh_update_proyek', { p_project: projectId }),
+    wajibMenu('/update'), periodeBerjalan(), detailProyek(projectId), profilAktif(), sb.rpc('fn_boleh_update_proyek', { p_project: projectId }),
   ]);
   if (!d) notFound();
   const { proyek: p } = d;
@@ -148,7 +149,7 @@ export default async function FormUpdate({ params, searchParams }: { params: Pro
         <SectionHead no="2" eyebrow="PICA" judul="Masalah dan aksi korektif">
           <p className="muted">Status Terlambat atau Kritis wajib punya minimal satu masalah terbuka dengan aksi korektif. Setiap aksi punya penanggung jawab dan tanggal target.</p>
         </SectionHead>
-        <div className="row aksi-atas"><Link href={`/dukungan?proyek=${p.id}#ajukan`} className="btn">Butuh dukungan atau keputusan pimpinan? Ajukan di sini</Link></div>
+        {bolehMenu(saya.peran.map(r => r.role), '/dukungan') && <div className="row aksi-atas"><Link href={`/dukungan?proyek=${p.id}#ajukan`} className="btn">Butuh dukungan atau keputusan pimpinan? Ajukan di sini</Link></div>}
         <div className="grid-2">
           <div className="card stack-list">
             {d.masalah.length === 0 && <p className="muted small">Belum ada masalah tercatat.</p>}

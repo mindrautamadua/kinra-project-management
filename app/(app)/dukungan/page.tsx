@@ -3,7 +3,7 @@ import { CircleCheck, Send, TriangleAlert } from 'lucide-react';
 import { Chip, SectionHead } from '@/components/Chip';
 import { daftarProyek, daftarUnit, profilAktif } from '@/lib/data';
 import { hariIni, tgl, type KodeStatus } from '@/lib/format';
-import { penggunaSaatIni } from '@/lib/sesi';
+import { wajibMenu } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 import { ajukanDukungan, tanggapiDukungan } from './actions';
 
@@ -27,7 +27,7 @@ export default async function Dukungan({ searchParams }: { searchParams: Cari })
   const sp = await searchParams;
   const sb = await supabase();
   const [saya, proyek, unit, orang, { data }] = await Promise.all([
-    penggunaSaatIni(), daftarProyek(), daftarUnit(), profilAktif(),
+    wajibMenu('/dukungan'), daftarProyek(), daftarUnit(), profilAktif(),
     sb.from('support_requests')
       .select('*,penerima:profiles!support_requests_ditujukan_ke_fkey(nama,jabatan),pengaju:profiles!support_requests_diajukan_oleh_fkey(nama),projects(kode,nama),org_units(kode,nama)')
       .order('tenggat'),

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { CircleCheck, TriangleAlert } from 'lucide-react';
 import { SectionHead } from '@/components/Chip';
 import { daftarSasaran } from '@/lib/data';
-import { penggunaSaatIni } from '@/lib/sesi';
+import { wajibMenu } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 import type { Sasaran } from '@/lib/types';
 import { tambahSasaran, ubahAktifSasaran, ubahSasaran } from './actions';
@@ -15,7 +15,7 @@ export default async function MasterSasaran({ searchParams }: { searchParams: Ca
   const sp = await searchParams;
   const sb = await supabase();
   const [saya, sasaran, { data: relasi }] = await Promise.all([
-    penggunaSaatIni(), daftarSasaran(true),
+    wajibMenu('/sasaran'), daftarSasaran(true),
     sb.from('project_objectives').select('objective_id,projects(id,kode,status)'),
   ]);
   const kelola = saya.peran.some(r => r.role === 'admin');

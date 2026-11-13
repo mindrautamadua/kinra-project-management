@@ -1,7 +1,7 @@
 import { CircleCheck, TriangleAlert } from 'lucide-react';
 import { SectionHead } from '@/components/Chip';
 import { daftarPic, daftarUnit, profilAktif } from '@/lib/data';
-import { bolehReview, penggunaSaatIni } from '@/lib/sesi';
+import { bolehReview, wajibMenu } from '@/lib/sesi';
 import { supabase } from '@/lib/supabase/server';
 import type { Pic } from '@/lib/types';
 import { tambahPic, ubahAktifPic, ubahPic } from './actions';
@@ -14,7 +14,7 @@ export default async function MasterPic({ searchParams }: { searchParams: Cari }
   const sp = await searchParams;
   const sb = await supabase();
   const [saya, pics, unit, akun, { data: relasi }] = await Promise.all([
-    penggunaSaatIni(), daftarPic(true), daftarUnit(), profilAktif(),
+    wajibMenu('/pic'), daftarPic(true), daftarUnit(), profilAktif(),
     sb.from('project_pics').select('pic_id,projects(kode,status)'),
   ]);
   const kelola = bolehReview(saya);

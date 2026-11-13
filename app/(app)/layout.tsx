@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import IndikatorProses from '@/components/client/IndikatorProses';
 import NavLinks from '@/components/client/NavLinks';
+import { menuUntuk } from '@/lib/menu';
 import TombolTema from '@/components/client/TombolTema';
 import TombolSidebar from '@/components/client/TombolSidebar';
 import { keluar } from '@/app/login/actions';
@@ -25,7 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const admin = saya.peran.some(r => r.role === 'admin');
+  const menu = menuUntuk(saya.peran.map(r => r.role));
   const periode = await periodeBerjalan();
   const sb = await supabase();
   const [{ data: dapat }, { data: sudah }] = await Promise.all([
@@ -45,7 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <img src="/brand/kinra-logo-tosca.png" alt="Kinra Sei Mangkei" width={168} height={72} />
           <div className="brand-sub">Project Hub</div>
         </div>
-        <NavLinks badgeUpdate={belum} admin={admin} />
+        <NavLinks badgeUpdate={belum} menu={menu} />
         <div className="side-card">
           <div className="side-label">Periode laporan</div>
           <b>{periode.label}</b>
@@ -66,7 +67,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </header>
-        <NavLinks badgeUpdate={belum} admin={admin} varian="mobile" />
+        <NavLinks badgeUpdate={belum} menu={menu} varian="mobile" />
         <main>{children}</main>
         <footer className="footer">
           Status proyek dihitung sistem dari baseline dan progres aktivitas (SPI = % aktual ÷ % rencana). Sesuai ≥ 0,95 · Waspada ≥ 0,85 · Terlambat ≥ 0,70 · Kritis &lt; 0,70 atau lewat tenggat baseline.

@@ -2,6 +2,7 @@ import 'server-only';
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { supabase } from './supabase/server';
+import { bolehMenu } from './menu';
 import type { Peran } from './types';
 
 export interface Pengguna {
@@ -28,5 +29,12 @@ export const penggunaSaatIni = cache(async (): Promise<Pengguna> => {
     peran: (peran ?? []) as Pengguna['peran'],
   };
 });
+
+// Tolak halaman menu yang tidak sesuai peran pengguna (menu disembunyikan, URL langsung diarahkan ke dasbor).
+export async function wajibMenu(href: string): Promise<Pengguna> {
+  const saya = await penggunaSaatIni();
+  if (!bolehMenu(saya.peran.map(r => r.role), href)) redirect('/');
+  return saya;
+}
 
 export const bolehReview = (p: Pengguna) => p.peran.some(r => ['admin', 'kabag', 'kasubag'].includes(r.role));

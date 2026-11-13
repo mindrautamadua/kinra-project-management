@@ -5,6 +5,7 @@ import { Chip, ChipKesehatan, ChipUpdate, SectionHead } from '@/components/Chip'
 import Gantt from '@/components/Gantt';
 import { detailProyek, profilAktif } from '@/lib/data';
 import { muatFoto } from '@/lib/foto';
+import { bolehMenu } from '@/lib/menu';
 import { penggunaSaatIni } from '@/lib/sesi';
 import { angka, hariIni, persen, rupiah, STATUS_PROYEK, tgl, tanggalPelaksanaanFoto } from '@/lib/format';
 import { supabase } from '@/lib/supabase/server';
@@ -32,7 +33,7 @@ export default async function DetailProyek({ params }: { params: Promise<{ id: s
           <ChipKesehatan status={r?.status_kesehatan ?? null} override={r?.ada_override} />
           <Link href={`/proyek/${p.id}/charter`} className="btn">Project charter</Link>
           {boleh && <Link href={`/proyek/${p.id}/ubah`} className="btn">Ubah charter &amp; aktivitas</Link>}
-          {p.status === 'aktif' && <Link href={`/dukungan?proyek=${p.id}#ajukan`} className="btn">Minta dukungan / keputusan</Link>}
+          {p.status === 'aktif' && bolehMenu(saya.peran.map(r => r.role), '/dukungan') && <Link href={`/dukungan?proyek=${p.id}#ajukan`} className="btn">Minta dukungan / keputusan</Link>}
           {boleh && p.status === 'aktif' && <Link href={`/update/${p.id}`} className="btn primary"><ClipboardPen size={15} aria-hidden="true" />Isi update minggu ini</Link>}
         </div>
         <div className="tiles tiles-4">
