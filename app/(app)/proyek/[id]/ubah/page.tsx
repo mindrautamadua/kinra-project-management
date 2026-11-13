@@ -31,7 +31,8 @@ export default async function UbahCharter({ params, searchParams }: { params: Pr
   const bisa = !!boleh;
   const pemutus = saya.peran.some(r => r.role === 'admin' || r.role === 'kabag');
   // Database (fn_hapus_proyek) tetap memeriksa cakupan unit; ini hanya menentukan apakah kartu ditampilkan.
-  const bolehHapus = draf ? !!boleh && bolehReview(saya) : saya.peran.some(r => r.role === 'admin');
+  // Draf: pengelola unit, atau Operator pembuatnya (boleh bernilai true untuk Operator hanya pada Draf buatannya).
+  const bolehHapus = draf ? !!boleh && (bolehReview(saya) || saya.peran.some(r => r.role === 'operator')) : saya.peran.some(r => r.role === 'admin');
   const aktivitas = d.aktivitas.filter(a => a.status !== 'dibatalkan');
   const berubah = !draf && aktivitas.some(a => {
     const b = d.baseline[a.id];

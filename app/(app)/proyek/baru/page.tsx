@@ -3,15 +3,16 @@ import { TriangleAlert } from 'lucide-react';
 import { SectionHead } from '@/components/Chip';
 import FieldsCharter from '@/components/FieldsCharter';
 import { daftarPic, daftarSasaran, daftarUnit } from '@/lib/data';
-import { penggunaSaatIni } from '@/lib/sesi';
+import { unitBolehBuat } from '@/lib/menu';
+import { wajibMenu } from '@/lib/sesi';
 import { buatProyek } from '../actions';
 
 type Cari = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function ProyekBaru({ searchParams }: { searchParams: Cari }) {
   const sp = await searchParams;
-  const [saya, unit, pics, sasaran] = await Promise.all([penggunaSaatIni(), daftarUnit(), daftarPic(), daftarSasaran()]);
-  const subUnit = unit.filter(u => u.level === 'sub_bidang' || u.level === 'bidang');
+  const [saya, unit, pics, sasaran] = await Promise.all([wajibMenu('/proyek/baru'), daftarUnit(), daftarPic(), daftarSasaran()]);
+  const subUnit = unitBolehBuat(saya.peran, unit.filter(u => u.level === 'sub_bidang' || u.level === 'bidang'));
   const galat = typeof sp.galat === 'string' ? sp.galat : null;
 
   return (
