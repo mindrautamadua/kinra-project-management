@@ -16,7 +16,10 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const { data: { user } } = await sb.auth.getUser();
+  // getClaims memverifikasi JWT secara lokal dengan kunci publik (ES256, JWKS di-cache) tanpa memanggil
+  // server Auth, dan tetap menyegarkan token yang kedaluwarsa lewat cookie.
+  const { data } = await sb.auth.getClaims();
+  const user = data?.claims.sub ? data.claims : null;
   const diLogin = request.nextUrl.pathname.startsWith('/login');
   if (!user && !diLogin) return NextResponse.redirect(new URL('/login', request.url));
   if (user && diLogin) return NextResponse.redirect(new URL('/', request.url));

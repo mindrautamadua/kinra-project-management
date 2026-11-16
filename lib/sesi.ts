@@ -13,7 +13,9 @@ export interface Pengguna {
 // Pengguna yang sedang login beserta profil dan perannya. Satu kali per permintaan.
 export const penggunaSaatIni = cache(async (): Promise<Pengguna> => {
   const sb = await supabase();
-  const { data: { user } } = await sb.auth.getUser();
+  // Verifikasi JWT lokal (ES256) tanpa bolak-balik ke server Auth; status aktif tetap dibaca dari profil.
+  const { data } = await sb.auth.getClaims();
+  const user = data?.claims.sub ? { id: data.claims.sub, email: data.claims.email } : null;
   if (!user) redirect('/login');
 
   const [{ data: profil }, { data: peran }] = await Promise.all([
